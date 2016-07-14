@@ -1,0 +1,29 @@
+{
+  "name": "phaser-plugin-scene-graph",
+  "description": "Phaser plugin prints the display tree in the browser console",
+  "author": "samme",
+  "version": "0.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "start": "brunch watch --server",
+    "build": "brunch build --production"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "auto-reload-brunch": "^2.0.0",
+    "coffee-script-brunch": "^2.0.0",
+    "coffeelint-brunch": "^2.0.0",
+    "jaded-brunch": "^2.3.0",
+    "javascript-brunch": "^2.0.0",
+    "jstransformer-coffee-script": "^1.0.0",
+    "jstransformer-markdown": "^1.1.0",
+    "jstransformer-stylus": "^1.0.0",
+    "jstransformer-verbatim": "^1.0.0",
+    "uglify-js-brunch": "^2.0.0",
+    "version-brunch": "^1.0.1"
+  }
+}

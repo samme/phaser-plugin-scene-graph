@@ -1,0 +1,28 @@
+doctype html
+html(lang='en')
+
+  meta(charset='utf-8')
+  style
+    :verbatim
+      body {margin: 0; padding: 0; background: #111; color: #eee; font: 1rem/1.5 monospace;}
+      a:link, a:visited {color: #7FDBFF;}
+  title Example
+
+  main
+    #phaser-example
+
+  footer
+    :markdown
+      [Scene Graph plugin](scene-graph.js)
+      (output shown in browser console)
+      +
+      [Tanks](http://phaser.io/examples/v2/games/tanks)
+      by [Phaser](http://phaser.io/examples/) ❤︎
+
+  script(src='//cdn.jsdelivr.net/phaser/2.6.1/phaser.js')
+  script(src='SceneGraph.js')
+  script(src='example.js')
+
+
+
+

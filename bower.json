@@ -1,0 +1,18 @@
+{
+  "name": "phaser-plugin-scene-graph",
+  "description": "Phaser plugin prints the display tree in the browser console",
+  "main": "dist/SceneGraph.js",
+  "authors": [
+    "samme"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
