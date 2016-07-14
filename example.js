@@ -2,7 +2,7 @@
 /*
   http://phaser.io/examples/v2/games/tanks
 
-  Plugin v0.0.0.18
+  Plugin v0.0.1.3
  */
 
 (function() {
