@@ -6,7 +6,7 @@
     "samme"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://samme.github.io/phaser-plugin-scene-graph/",
   "private": true,
   "ignore": [
     "**/.*",
