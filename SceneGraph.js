@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin v0.0.2.4 for Phaser
+  Scene Graph plugin v0.1.2.1 for Phaser
  */
 
 (function() {
@@ -64,7 +64,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.version = version = "0.0.2.4";
+    SceneGraph.version = version = "0.1.2.1";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -117,7 +117,7 @@
     };
 
     SceneGraph.prototype.graph = function(obj, options) {
-      var alive, child, children, collapse, constructor, count, desc, exists, hasChildren, hasLength, hasLess, j, len, length, longName, method, name, skipDead, skipNonExisting, total, type, visible;
+      var alive, child, children, collapse, constructor, count, desc, exists, hasChildren, hasLength, hasLess, j, len, length, longName, method, name, skipDead, skipNonexisting, total, type, visible;
       if (obj == null) {
         obj = this.game.stage;
       }
@@ -129,8 +129,11 @@
           skipNonexisting: false
         };
       }
-      collapse = options.collapse, skipDead = options.skipDead, skipNonExisting = options.skipNonExisting;
+      collapse = options.collapse, skipDead = options.skipDead, skipNonexisting = options.skipNonexisting;
       alive = obj.alive, children = obj.children, constructor = obj.constructor, exists = obj.exists, name = obj.name, total = obj.total, type = obj.type, visible = obj.visible;
+      if ((skipDead && !obj.alive) || (skipNonexisting && !obj.exists)) {
+        return;
+      }
       longName = getName(obj);
       length = (children != null ? children.length : void 0) || 0;
       hasChildren = length > 0;
