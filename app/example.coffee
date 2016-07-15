@@ -1,7 +1,5 @@
 ###
   http://phaser.io/examples/v2/games/tanks
-
-  Plugin v{!major!}.{!minor!}.{!maintenance!}.{!build!}
 ###
 
 land = undefined
