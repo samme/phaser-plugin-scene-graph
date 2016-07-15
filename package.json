@@ -12,7 +12,8 @@
   },
   "scripts": {
     "start": "brunch watch --server",
-    "build": "brunch build --production"
+    "build": "brunch build --production",
+    "deploy": "npm run build && git push origin master && git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {},
   "devDependencies": {
