@@ -71,8 +71,12 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     skipDead:        no,
     skipNonexisting: no
   }) ->
-    {collapse, skipDead, skipNonExisting} = options
+    {collapse, skipDead, skipNonexisting} = options
     {alive, children, constructor, exists, name, total, type, visible} = obj
+
+    return if (skipDead and not obj.alive) or
+              (skipNonexisting and not obj.exists)
+
     longName = getName obj
 
     length      = children?.length or 0
