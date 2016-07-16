@@ -27,7 +27,7 @@ Prints Phaser’s display tree in the console.
 
 For a quick look at a game in progress, run in the console:
 
-    (game || Phaser.GAMES[0]).load.script("SceneGraph",
+    (this.game || Phaser.GAMES[0]).load.script("SceneGraph",
         "https://samme.github.io/phaser-plugin-scene-graph/SceneGraph.js",
         function (){
             this.game.plugins.add(Phaser.Plugin.SceneGraph).graph();
