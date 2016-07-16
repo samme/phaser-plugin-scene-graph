@@ -27,7 +27,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     css:
       dead:          "text-decoration: line-through"
       nonexisting:   "color: gray"
-      nonrenderable: "background: rgba(255, 255, 255, 0.125)"
+      nonrenderable: "background: rgba(127, 127, 127, 0.125)"
       invisible:     "background: rgba(0, 0, 0, 0.25)"
 
   name: "Phaser SceneGraph Plugin"
