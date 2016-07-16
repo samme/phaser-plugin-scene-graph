@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin v0.1.2.1 for Phaser
+  Scene Graph plugin v0.1.2.5 for Phaser
  */
 
 (function() {
@@ -64,7 +64,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.version = version = "0.1.2.1";
+    SceneGraph.version = version = "0.1.2.5";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -74,7 +74,7 @@
       css: {
         dead: "text-decoration: line-through",
         nonexisting: "color: gray",
-        nonrenderable: "background: rgba(255, 255, 255, 0.125)",
+        nonrenderable: "background: rgba(127, 127, 127, 0.125)",
         invisible: "background: rgba(0, 0, 0, 0.25)"
       }
     };
