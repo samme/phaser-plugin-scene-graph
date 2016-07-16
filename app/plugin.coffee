@@ -67,36 +67,46 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   graph: (obj = @game.stage, options = {
     collapse:        yes
+    map:             null
     showParent:      no  # TODO
     skipDead:        no,
     skipNonexisting: no
   }) ->
-    {collapse, skipDead, skipNonexisting} = options
-    {alive, children, constructor, exists, name, total, type, visible} = obj
+    {collapse, map, skipDead, skipNonexisting} = options
+    {alive, children, exists} = obj
 
-    return if (skipDead and not obj.alive) or
-              (skipNonexisting and not obj.exists)
+    return if (skipDead and not alive) or
+              (skipNonexisting and not exists)
 
-    longName = getName obj
-
-    length      = children?.length or 0
-    hasChildren = length > 0
-    hasLength   = obj.length?
-    hasLess     = total and total < length
-    type        = types[type] or '?'
-    count       = if hasLength then (if hasLess then "(#{total}/#{length})" else
-                                                     "(#{length})")         else
-                                                     ""
-    desc        = "#{constructor?.name or type} #{longName} #{count}"
+    hasChildren = children?.length > 0
     method      = if hasChildren then (if collapse then groupCollapsed else group) else log
+    description = (if map then map else @map).call null, obj
 
-    method "%c#{desc}", @css obj
+    method "%c#{description}", @css obj
     @graph child, options for child in children if hasChildren
     groupEnd() if hasChildren
     return
 
   join: join = (arr, str) ->
     (i for i in arr when i).join str
+
+  map: (obj) ->
+    {children, constructor, total, type} = obj
+
+    longName    = getName obj
+                  # {children}: Button, Group, Sprite, Text … 
+    length      = children?.length or 0
+                  # {length}: a Group or Emitter
+                  #           Line
+    hasLength   = obj.length?
+    hasLess     = total and total < length
+    type        = types[type] or '?'
+    count       = switch
+                  when hasLess   then "(#{total}/#{length})"
+                  when hasLength then "(#{length})"
+                  else                ""
+
+    "#{constructor?.name or type} #{longName} #{count}"
 
   printStyles: ->
     log "Objects are styled:"
