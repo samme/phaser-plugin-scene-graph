@@ -16,6 +16,14 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
   groupEnd       = if group          then groupEnd.bind(console)       else none
   groupCollapsed = if groupCollapsed then groupCollapsed.bind(console) else group
 
+  _join = []
+
+  join = (arr, str) ->
+    _join.length = 0
+    for i in arr when i
+      _join.push i
+    _join.join str
+
   @types = types = { 0: "SPRITE", 1: "BUTTON", 2: "IMAGE", 3: "GRAPHICS", 4: "TEXT", 5: "TILESPRITE", 6: "BITMAPTEXT", 7: "GROUP", 8: "RENDERTEXTURE", 9: "TILEMAP", 10: "TILEMAPLAYER", 11: "EMITTER", 12: "POLYGON", 13: "BITMAPDATA", 14: "CANVAS_FILTER", 15: "WEBGL_FILTER", 16: "ELLIPSE", 17: "SPRITEBATCH", 18: "RETROFONT", 19: "POINTER", 20: "ROPE", 21: "CIRCLE", 22: "RECTANGLE", 23: "LINE", 24: "MATRIX", 25: "POINT", 26: "ROUNDEDRECTANGLE", 27: "CREATURE", 28: "VIDEO"}
 
   @version = version = "{!major!}.{!minor!}.{!maintenance!}.{!build!}"
@@ -87,14 +95,11 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     groupEnd() if hasChildren
     return
 
-  join: join = (arr, str) ->
-    (i for i in arr when i).join str
-
   map: (obj) ->
     {children, constructor, total, type} = obj
 
     longName    = getName obj
-                  # {children}: Button, Group, Sprite, Text … 
+                  # {children}: Button, Group, Sprite, Text …
     length      = children?.length or 0
                   # {length}: a Group or Emitter
                   #           Line
