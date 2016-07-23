@@ -12,6 +12,7 @@ Prints Phaser’s display tree in the console.
 
     game.debug.graph(obj, { // options:
         collapse:        yes,
+        map:             null, // function (obj) -> "description"
         skipDead:        no,
         skipNonexisting: no
     });
