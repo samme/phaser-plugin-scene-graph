@@ -101,7 +101,19 @@ create = ->
   game.camera.deadzone = new (Phaser.Rectangle)(150, 150, 500, 300)
   game.camera.focusOnXY 0, 0
   cursors = game.input.keyboard.createCursorKeys()
+
+  console.log "Example: graph w/ defaults:"
   game.debug.graph()
+
+  console.log "Example: graph w/ `filter`: include only named objects"
+  game.debug.graph game.world,
+    filter: (obj) -> obj.name
+
+  console.log "Example: graph w/ `map`: name only"
+  game.debug.graph game.world,
+    map: (obj) ->
+      "#{obj.name or obj.key or obj.constructor?.name}"
+
   return
 
 removeLogo = ->

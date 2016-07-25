@@ -75,20 +75,21 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   graph: (obj = @game.stage, options = {
     collapse:        yes
+    filter:          null
     map:             null
-    showParent:      no  # TODO
     skipDead:        no,
     skipNonexisting: no
   }) ->
-    {collapse, map, skipDead, skipNonexisting} = options
+    {collapse, filter, map, skipDead, skipNonexisting} = options
     {alive, children, exists} = obj
 
-    return if (skipDead and not alive) or
-              (skipNonexisting and not exists)
+    return if (skipDead        and not alive)  or
+              (skipNonexisting and not exists) or
+              (filter          and not filter obj)
 
     hasChildren = children?.length > 0
     method      = if hasChildren then (if collapse then groupCollapsed else group) else log
-    description = (if map then map else @map).call null, obj
+    description = (if map then map else @map).call null, obj, options
 
     method "%c#{description}", @css obj
     @graph child, options for child in children if hasChildren

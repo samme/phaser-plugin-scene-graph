@@ -8,13 +8,14 @@ Prints Phaser’s display tree in the console.
 
     game.debug.graph() // everything; or
 
-    game.debug.graph(obj)
+    game.debug.graph(obj) // 1 object & descendants
 
     game.debug.graph(obj, { // options:
-        collapse:        yes,
+        collapse:        true,
+        filter:          null, // function (obj) -> true | false
         map:             null, // function (obj) -> "description"
-        skipDead:        no,
-        skipNonexisting: no
+        skipDead:        false,
+        skipNonexisting: false
     });
 
 ## Tips
