@@ -71,7 +71,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
   getName: getName = (obj) ->
     {frame, frameName, name} = obj
     key = getKey obj
-    join [name, join [key, frameName or frame], "."], " "
+    join [name, join [key, frame], "."], " "
 
   graph: (obj = @game.stage, options = {
     collapse:        yes
