@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin v0.2.0.1 for Phaser
+  Scene Graph plugin v0.3.0.1 for Phaser
  */
 
 (function() {
@@ -78,7 +78,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.version = version = "0.2.0.1";
+    SceneGraph.version = version = "0.3.0.1";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -127,7 +127,7 @@
       var frame, frameName, key, name;
       frame = obj.frame, frameName = obj.frameName, name = obj.name;
       key = getKey(obj);
-      return join([name, join([key, frameName || frame], ".")], " ");
+      return join([name, join([key, frame], ".")], " ");
     };
 
     SceneGraph.prototype.graph = function(obj, options) {
