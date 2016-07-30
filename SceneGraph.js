@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin v0.4.0.1 for Phaser
+  Scene Graph plugin v0.5.0.1 for Phaser
  */
 
 (function() {
@@ -54,7 +54,8 @@
         nonexisting: "color: gray",
         nonrenderable: "background: rgba(127, 127, 127, 0.125)",
         invisible: "background: rgba(0, 0, 0, 0.25)"
-      })
+      }),
+      quiet: false
     });
 
     SceneGraph.types = types = {
@@ -89,7 +90,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.version = version = "0.4.0.1";
+    SceneGraph.version = version = "0.5.0.1";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -105,9 +106,11 @@
       if (settings) {
         extend(true, this.config, settings);
       }
-      console.log("%s v%s 👾", this.name, version);
-      console.log("Use `game.debug.graph()` or `game.debug.graph(obj)`");
-      this.printStyles();
+      if (!this.config.quiet) {
+        console.log("%s v%s 👾", this.name, version);
+        console.log("Use `game.debug.graph()` or `game.debug.graph(obj)`");
+        this.printStyles();
+      }
       Phaser.Utils.Debug.prototype.graph = this.graph.bind(this);
     };
 
