@@ -32,6 +32,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
       nonexisting:   "color: gray"
       nonrenderable: "background: rgba(127, 127, 127, 0.125)"
       invisible:     "background: rgba(0, 0, 0, 0.25)"
+    quiet: no
 
   @types = types = { 0: "SPRITE", 1: "BUTTON", 2: "IMAGE", 3: "GRAPHICS", 4: "TEXT", 5: "TILESPRITE", 6: "BITMAPTEXT", 7: "GROUP", 8: "RENDERTEXTURE", 9: "TILEMAP", 10: "TILEMAPLAYER", 11: "EMITTER", 12: "POLYGON", 13: "BITMAPDATA", 14: "CANVAS_FILTER", 15: "WEBGL_FILTER", 16: "ELLIPSE", 17: "SPRITEBATCH", 18: "RETROFONT", 19: "POINTER", 20: "ROPE", 21: "CIRCLE", 22: "RECTANGLE", 23: "LINE", 24: "MATRIX", 25: "POINT", 26: "ROUNDEDRECTANGLE", 27: "CREATURE", 28: "VIDEO"}
 
@@ -49,9 +50,10 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     @config = extend yes, {}, @constructor.config
     seal @config
     extend yes, @config, settings if settings
-    console.log "%s v%s 👾", @name, version
-    console.log "Use `game.debug.graph()` or `game.debug.graph(obj)`"
-    @printStyles()
+    unless @config.quiet
+      console.log "%s v%s 👾", @name, version
+      console.log "Use `game.debug.graph()` or `game.debug.graph(obj)`"
+      @printStyles()
     Phaser.Utils.Debug::graph = @graph.bind this
     return
 

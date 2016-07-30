@@ -20,7 +20,15 @@ Prints Phaser’s display tree in the console.
 
     // Optional: configure
 
-    game.plugins.add(Phaser.Plugin.SceneGraph, {/* settings */});
+    game.plugins.add(Phaser.Plugin.SceneGraph, {
+      css: {
+        dead:          "text-decoration: line-through",
+        nonexisting:   "color: gray",
+        nonrenderable: "background: rgba(127, 127, 127, 0.125)",
+        invisible:     "background: rgba(0, 0, 0, 0.25)"
+      },
+      quiet: false
+    });
 
 ## Tips
 
