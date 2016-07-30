@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin v0.5.0.1 for Phaser
+  Scene Graph plugin v0.5.1.1 for Phaser
  */
 
 (function() {
@@ -14,7 +14,7 @@
   extend = Phaser.Utils.extend;
 
   Phaser.Plugin.SceneGraph = freeze(SceneGraph = (function(superClass) {
-    var _join, getKey, getName, group, groupCollapsed, groupEnd, join, log, none, types, version;
+    var _join, getKey, getName, group, groupCollapsed, groupEnd, join, log, none, types;
 
     extend1(SceneGraph, superClass);
 
@@ -90,15 +90,13 @@
       28: "VIDEO"
     };
 
-    SceneGraph.version = version = "0.5.0.1";
+    SceneGraph.VERSION = "0.5.1.1";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
     };
 
-    SceneGraph.prototype.name = "Phaser SceneGraph Plugin";
-
-    SceneGraph.prototype.version = version;
+    SceneGraph.prototype.name = "Scene Graph Plugin";
 
     SceneGraph.prototype.init = function(settings) {
       this.config = extend(true, {}, this.constructor.config);
@@ -107,8 +105,8 @@
         extend(true, this.config, settings);
       }
       if (!this.config.quiet) {
-        console.log("%s v%s 👾", this.name, version);
-        console.log("Use `game.debug.graph()` or `game.debug.graph(obj)`");
+        log("%s v%s 👾", this.name, this.constructor.VERSION);
+        log("Use `game.debug.graph()` or `game.debug.graph(obj)`");
         this.printStyles();
       }
       Phaser.Utils.Debug.prototype.graph = this.graph.bind(this);

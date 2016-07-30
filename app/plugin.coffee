@@ -11,6 +11,7 @@
 Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   {group, groupCollapsed, groupEnd, log} = console
+
   none = ->
 
   log            = log.bind console
@@ -36,13 +37,12 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   @types = types = { 0: "SPRITE", 1: "BUTTON", 2: "IMAGE", 3: "GRAPHICS", 4: "TEXT", 5: "TILESPRITE", 6: "BITMAPTEXT", 7: "GROUP", 8: "RENDERTEXTURE", 9: "TILEMAP", 10: "TILEMAPLAYER", 11: "EMITTER", 12: "POLYGON", 13: "BITMAPDATA", 14: "CANVAS_FILTER", 15: "WEBGL_FILTER", 16: "ELLIPSE", 17: "SPRITEBATCH", 18: "RETROFONT", 19: "POINTER", 20: "ROPE", 21: "CIRCLE", 22: "RECTANGLE", 23: "LINE", 24: "MATRIX", 25: "POINT", 26: "ROUNDEDRECTANGLE", 27: "CREATURE", 28: "VIDEO"}
 
-  @version = version = "{!major!}.{!minor!}.{!maintenance!}.{!build!}"
+  @VERSION = "{!major!}.{!minor!}.{!maintenance!}.{!build!}"
 
   @addTo = (game) ->
     game.plugins.add this
 
-  name: "Phaser SceneGraph Plugin"
-  version: version
+  name: "Scene Graph Plugin"
 
   # Hooks
 
@@ -51,8 +51,8 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     seal @config
     extend yes, @config, settings if settings
     unless @config.quiet
-      console.log "%s v%s 👾", @name, version
-      console.log "Use `game.debug.graph()` or `game.debug.graph(obj)`"
+      log "%s v%s 👾", @name, @constructor.VERSION
+      log "Use `game.debug.graph()` or `game.debug.graph(obj)`"
       @printStyles()
     Phaser.Utils.Debug::graph = @graph.bind this
     return
@@ -107,11 +107,8 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     {children, constructor, total, type} = obj
 
     longName    = getName obj
-                  # {children}: Button, Group, Sprite, Text …
-    length      = children?.length or 0
-                  # {length}: a Group or Emitter
-                  #           Line
-    hasLength   = obj.length?
+    length      = children?.length or 0 # Button, Group, Sprite, Text …
+    hasLength   = obj.length?           # Group, Emitter, Line(!)
     hasLess     = total and total < length
     type        = types[type] or '?'
     count       = switch
