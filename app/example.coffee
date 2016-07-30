@@ -21,10 +21,9 @@ fireRate = 500
 nextFire = 0
 
 init = ->
-  console.log "Example: pass settings (config.css.dead)"
+  console.log "Example: omit the introductory messages"
   game.plugins.add Phaser.Plugin.SceneGraph,
-    css:
-      dead: "color: white; background: black"
+    quiet: yes
   return
 
 preload = ->
