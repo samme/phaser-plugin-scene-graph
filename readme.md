@@ -18,6 +18,10 @@ Prints Phaser’s display tree in the console.
         skipNonexisting: false
     });
 
+    // Optional: configure
+
+    game.plugins.add(Phaser.Plugin.SceneGraph, {/* settings */});
+
 ## Tips
 
     // Name your groups and emitters:

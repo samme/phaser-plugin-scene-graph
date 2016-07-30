@@ -1,20 +1,22 @@
 
 /*
-  Scene Graph plugin v0.3.0.1 for Phaser
+  Scene Graph plugin v0.4.0.1 for Phaser
  */
 
 (function() {
   "use strict";
-  var SceneGraph, freeze, seal,
-    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  var SceneGraph, extend, freeze, seal,
+    extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   freeze = Object.freeze, seal = Object.seal;
 
+  extend = Phaser.Utils.extend;
+
   Phaser.Plugin.SceneGraph = freeze(SceneGraph = (function(superClass) {
     var _join, getKey, getName, group, groupCollapsed, groupEnd, join, log, none, types, version;
 
-    extend(SceneGraph, superClass);
+    extend1(SceneGraph, superClass);
 
     function SceneGraph() {
       return SceneGraph.__super__.constructor.apply(this, arguments);
@@ -45,6 +47,15 @@
       }
       return _join.join(str);
     };
+
+    SceneGraph.config = freeze({
+      css: freeze({
+        dead: "text-decoration: line-through",
+        nonexisting: "color: gray",
+        nonrenderable: "background: rgba(127, 127, 127, 0.125)",
+        invisible: "background: rgba(0, 0, 0, 0.25)"
+      })
+    });
 
     SceneGraph.types = types = {
       0: "SPRITE",
@@ -78,26 +89,22 @@
       28: "VIDEO"
     };
 
-    SceneGraph.version = version = "0.3.0.1";
+    SceneGraph.version = version = "0.4.0.1";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
-    };
-
-    SceneGraph.prototype.config = {
-      css: {
-        dead: "text-decoration: line-through",
-        nonexisting: "color: gray",
-        nonrenderable: "background: rgba(127, 127, 127, 0.125)",
-        invisible: "background: rgba(0, 0, 0, 0.25)"
-      }
     };
 
     SceneGraph.prototype.name = "Phaser SceneGraph Plugin";
 
     SceneGraph.prototype.version = version;
 
-    SceneGraph.prototype.init = function() {
+    SceneGraph.prototype.init = function(settings) {
+      this.config = extend(true, {}, this.constructor.config);
+      seal(this.config);
+      if (settings) {
+        extend(true, this.config, settings);
+      }
       console.log("%s v%s 👾", this.name, version);
       console.log("Use `game.debug.graph()` or `game.debug.graph(obj)`");
       this.printStyles();

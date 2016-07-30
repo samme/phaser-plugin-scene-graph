@@ -6,6 +6,8 @@
 
 {freeze, seal} = Object
 
+{extend} = Phaser.Utils
+
 Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   {group, groupCollapsed, groupEnd, log} = console
@@ -24,6 +26,13 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
       _join.push i
     _join.join str
 
+  @config = freeze
+    css: freeze
+      dead:          "text-decoration: line-through"
+      nonexisting:   "color: gray"
+      nonrenderable: "background: rgba(127, 127, 127, 0.125)"
+      invisible:     "background: rgba(0, 0, 0, 0.25)"
+
   @types = types = { 0: "SPRITE", 1: "BUTTON", 2: "IMAGE", 3: "GRAPHICS", 4: "TEXT", 5: "TILESPRITE", 6: "BITMAPTEXT", 7: "GROUP", 8: "RENDERTEXTURE", 9: "TILEMAP", 10: "TILEMAPLAYER", 11: "EMITTER", 12: "POLYGON", 13: "BITMAPDATA", 14: "CANVAS_FILTER", 15: "WEBGL_FILTER", 16: "ELLIPSE", 17: "SPRITEBATCH", 18: "RETROFONT", 19: "POINTER", 20: "ROPE", 21: "CIRCLE", 22: "RECTANGLE", 23: "LINE", 24: "MATRIX", 25: "POINT", 26: "ROUNDEDRECTANGLE", 27: "CREATURE", 28: "VIDEO"}
 
   @version = version = "{!major!}.{!minor!}.{!maintenance!}.{!build!}"
@@ -31,19 +40,15 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
   @addTo = (game) ->
     game.plugins.add this
 
-  config:
-    css:
-      dead:          "text-decoration: line-through"
-      nonexisting:   "color: gray"
-      nonrenderable: "background: rgba(127, 127, 127, 0.125)"
-      invisible:     "background: rgba(0, 0, 0, 0.25)"
-
   name: "Phaser SceneGraph Plugin"
   version: version
 
   # Hooks
 
-  init: ->
+  init: (settings) ->
+    @config = extend yes, {}, @constructor.config
+    seal @config
+    extend yes, @config, settings if settings
     console.log "%s v%s 👾", @name, version
     console.log "Use `game.debug.graph()` or `game.debug.graph(obj)`"
     @printStyles()
