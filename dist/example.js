@@ -5,7 +5,7 @@
 
 (function() {
   "use strict";
-  var EnemyTank, bulletHitEnemy, bulletHitPlayer, bullets, create, currentSpeed, cursors, enemies, enemiesAlive, enemiesTotal, enemyBullets, explosions, fire, fireRate, game, init, land, logo, nextFire, preload, removeLogo, render, shadow, tank, turret, update;
+  var EnemyTank, bulletHitEnemy, bulletHitPlayer, bullets, create, currentSpeed, cursors, enemies, enemiesAlive, enemiesTotal, enemyBullets, explosions, fire, fireRate, game, graphWorld, init, land, logo, nextFire, preload, removeLogo, render, restart, shadow, tank, turret, update;
 
   land = void 0;
 
@@ -38,10 +38,7 @@
   nextFire = 0;
 
   init = function() {
-    console.log("Example: omit the introductory messages");
-    game.plugins.add(Phaser.Plugin.SceneGraph, {
-      quiet: true
-    });
+    game.plugins.add(Phaser.Plugin.SceneGraph);
   };
 
   preload = function() {
@@ -55,7 +52,7 @@
   };
 
   create = function() {
-    var explosionAnimation, i, j, ref, world;
+    var events, explosionAnimation, i, j, keyboard, ref, world;
     world = game.world;
     land = game.add.tileSprite(0, 0, world.width, world.height, 'earth');
     land.fixedToCamera = true;
@@ -110,26 +107,46 @@
     game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
     game.camera.focusOnXY(0, 0);
     cursors = game.input.keyboard.createCursorKeys();
-    console.log("Example: graph w/ defaults:");
-    game.debug.graph();
-    console.log("Example: graph w/ `filter`: include only named objects");
-    game.debug.graph(game.world, {
-      filter: function(obj) {
-        return obj.name;
-      }
+    keyboard = game.input.keyboard;
+    keyboard.addKey(Phaser.KeyCode.G).onDown.add(graphWorld, this);
+    keyboard.addKey(Phaser.KeyCode.R).onDown.add(restart, this);
+    events = game.time.events;
+    events.add(1000, function() {
+      console.log("Example: graph w/ defaults:");
+      return game.debug.graph();
     });
-    console.log("Example: graph w/ `map`: name only");
-    game.debug.graph(game.world, {
-      map: function(obj) {
-        var ref1;
-        return "" + (obj.name || obj.key || ((ref1 = obj.constructor) != null ? ref1.name : void 0));
-      }
+    events.add(2000, function() {
+      console.log("Example: graph w/ `filter`: include only named objects");
+      return game.debug.graph(game.world, {
+        filter: function(obj) {
+          return obj.name;
+        }
+      });
+    });
+    events.add(3000, function() {
+      console.log("Example: graph w/ `map`: name only");
+      return game.debug.graph(game.world, {
+        map: function(obj) {
+          var ref1;
+          return "" + (obj.name || obj.key || ((ref1 = obj.constructor) != null ? ref1.name : void 0));
+        }
+      });
+    });
+  };
+
+  graphWorld = function() {
+    return game.debug.graph(game.world, {
+      collapse: false
     });
   };
 
   removeLogo = function() {
     game.input.onDown.remove(removeLogo, this);
     logo.kill();
+  };
+
+  restart = function() {
+    return game.state.restart();
   };
 
   update = function() {
@@ -199,6 +216,7 @@
 
   render = function() {
     game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 32);
+    game.debug.text("Plugin v" + Phaser.Plugin.SceneGraph.VERSION + " | (G)raph to the browser console (R)estart", 32, game.camera.height - 32);
   };
 
   EnemyTank = function(index, game, player, bullets) {

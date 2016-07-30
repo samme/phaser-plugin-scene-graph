@@ -21,9 +21,7 @@ fireRate = 500
 nextFire = 0
 
 init = ->
-  console.log "Example: omit the introductory messages"
-  game.plugins.add Phaser.Plugin.SceneGraph,
-    quiet: yes
+  game.plugins.add Phaser.Plugin.SceneGraph
   return
 
 preload = ->
@@ -106,24 +104,40 @@ create = ->
   game.camera.focusOnXY 0, 0
   cursors = game.input.keyboard.createCursorKeys()
 
-  console.log "Example: graph w/ defaults:"
-  game.debug.graph()
+  {keyboard} = game.input
 
-  console.log "Example: graph w/ `filter`: include only named objects"
-  game.debug.graph game.world,
-    filter: (obj) -> obj.name
+  keyboard.addKey(Phaser.KeyCode.G).onDown.add graphWorld, this
+  keyboard.addKey(Phaser.KeyCode.R).onDown.add restart,    this
 
-  console.log "Example: graph w/ `map`: name only"
-  game.debug.graph game.world,
-    map: (obj) ->
-      "#{obj.name or obj.key or obj.constructor?.name}"
+  {events} = game.time
+
+  events.add 1000, ->
+    console.log "Example: graph w/ defaults:"
+    game.debug.graph()
+
+  events.add 2000, ->
+    console.log "Example: graph w/ `filter`: include only named objects"
+    game.debug.graph game.world,
+      filter: (obj) -> obj.name
+
+  events.add 3000, ->
+    console.log "Example: graph w/ `map`: name only"
+    game.debug.graph game.world,
+      map: (obj) ->
+        "#{obj.name or obj.key or obj.constructor?.name}"
 
   return
+
+graphWorld = ->
+  game.debug.graph game.world, collapse: no
 
 removeLogo = ->
   game.input.onDown.remove removeLogo, this
   logo.kill()
   return
+
+restart = ->
+  game.state.restart()
 
 update = ->
   game.physics.arcade.overlap enemyBullets, tank, bulletHitPlayer, null, this
@@ -184,6 +198,10 @@ fire = ->
 render = ->
   # game.debug.text('Active Bullets: ' + bullets.countLiving() + ' / ' + bullets.length, 32, 32);
   game.debug.text 'Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 32
+  game.debug.text "Plugin v#{Phaser.Plugin.SceneGraph.VERSION} |
+                   (G)raph to the browser console
+                   (R)estart",
+                   32, game.camera.height - 32
   return
 
 EnemyTank = (index, game, player, bullets) ->
