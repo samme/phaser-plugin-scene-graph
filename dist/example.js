@@ -4,6 +4,7 @@
  */
 
 (function() {
+  "use strict";
   var EnemyTank, bulletHitEnemy, bulletHitPlayer, bullets, create, currentSpeed, cursors, enemies, enemiesAlive, enemiesTotal, enemyBullets, explosions, fire, fireRate, game, init, land, logo, nextFire, preload, removeLogo, render, shadow, tank, turret, update;
 
   land = void 0;
@@ -37,7 +38,12 @@
   nextFire = 0;
 
   init = function() {
-    game.plugins.add(Phaser.Plugin.SceneGraph);
+    console.log("Example: pass settings (config.css.dead)");
+    game.plugins.add(Phaser.Plugin.SceneGraph, {
+      css: {
+        dead: "color: white; background: black"
+      }
+    });
   };
 
   preload = function() {

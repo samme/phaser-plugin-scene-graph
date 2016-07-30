@@ -2,6 +2,8 @@
   http://phaser.io/examples/v2/games/tanks
 ###
 
+"use strict"
+
 land = undefined
 shadow = undefined
 tank = undefined
@@ -19,7 +21,10 @@ fireRate = 500
 nextFire = 0
 
 init = ->
-  game.plugins.add Phaser.Plugin.SceneGraph
+  console.log "Example: pass settings (config.css.dead)"
+  game.plugins.add Phaser.Plugin.SceneGraph,
+    css:
+      dead: "color: white; background: black"
   return
 
 preload = ->
