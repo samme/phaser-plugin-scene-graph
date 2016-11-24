@@ -3,7 +3,7 @@
   "description": "Phaser plugin prints the display tree in the browser console",
   "main": "dist/SceneGraph.js",
   "dependencies": {
-    "phaser": "2.*"
+    "phaser": "^2.6.2"
   },
   "authors": [
     "samme"

@@ -15,7 +15,9 @@
     "build": "brunch build --production",
     "deploy": "npm run build && git push origin master && git subtree push --prefix dist origin gh-pages"
   },
-  "dependencies": {},
+  "dependencies": {
+    "phaser": "^2.6.2"
+  },
   "devDependencies": {
     "auto-reload-brunch": "^2.0.0",
     "coffee-script-brunch": "^2.0.0",
