@@ -1,6 +1,6 @@
 {
   "name": "phaser-plugin-scene-graph",
-  "description": "Phaser plugin prints the display tree in the browser console",
+  "description": "Prints the display tree",
   "main": "dist/SceneGraph.js",
   "dependencies": {
     "phaser": "^2.6.2"

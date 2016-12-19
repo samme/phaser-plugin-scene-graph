@@ -21,7 +21,10 @@ fireRate = 500
 nextFire = 0
 
 init = ->
-  game.plugins.add Phaser.Plugin.SceneGraph
+  game.debug.font = '16px monospace'
+  game.debug.lineHeight = 25
+  unless game.sceneGraphPlugin
+    game.sceneGraphPlugin = game.plugins.add Phaser.Plugin.SceneGraph
   return
 
 preload = ->
@@ -36,6 +39,8 @@ preload = ->
 
 create = ->
   {world} = game
+  world.setBounds 0, 0, 800, 800
+  game.debug.bounds = world.bounds.clone().offset world.bounds.right + 10, 20
   #  Our tiled scrolling background
   land = game.add.tileSprite(0, 0, world.width, world.height, 'earth')
   land.fixedToCamera = true
@@ -62,7 +67,7 @@ create = ->
   enemyBullets = game.add.group(game.world, 'enemyBullets')
   enemyBullets.enableBody = true
   enemyBullets.physicsBodyType = Phaser.Physics.ARCADE
-  enemyBullets.createMultiple 30, 'bullet'
+  enemyBullets.createMultiple 3, 'bullet'
   enemyBullets.setAll 'anchor.x', 0.5
   enemyBullets.setAll 'anchor.y', 0.5
   enemyBullets.setAll 'outOfBoundsKill', true
@@ -80,7 +85,7 @@ create = ->
   bullets = game.add.group(game.world, 'bullets')
   bullets.enableBody = true
   bullets.physicsBodyType = Phaser.Physics.ARCADE
-  bullets.createMultiple 10, 'bullet', 0, false
+  bullets.createMultiple 3, 'bullet', 0, false
   bullets.setAll 'anchor.x', 0.5
   bullets.setAll 'anchor.y', 0.5
   bullets.setAll 'outOfBoundsKill', true
@@ -104,6 +109,16 @@ create = ->
   game.camera.focusOnXY 0, 0
   cursors = game.input.keyboard.createCursorKeys()
 
+  caption = game.add.text 0, 0,
+    "Phaser v#{Phaser.VERSION} |
+    Plugin v#{Phaser.Plugin.SceneGraph.VERSION} |
+    (G)raph to the browser console
+    (R)estart", {
+      fill: "white"
+      font: "16px monospace"
+    }
+  caption.alignIn game.camera.view, Phaser.BOTTOM_LEFT, -10, -10
+
   {keyboard} = game.input
 
   keyboard.addKey(Phaser.KeyCode.G).onDown.add graphWorld, this
@@ -118,11 +133,13 @@ create = ->
   events.add 2000, ->
     console.log "Example: graph w/ `filter`: include only named objects"
     game.debug.graph game.world,
+      collapse: yes
       filter: (obj) -> obj.name
 
   events.add 3000, ->
     console.log "Example: graph w/ `map`: name only"
     game.debug.graph game.world,
+      collapse: yes
       map: (obj) ->
         "#{obj.name or obj.key or obj.constructor?.name}"
 
@@ -196,12 +213,9 @@ fire = ->
   return
 
 render = ->
-  # game.debug.text('Active Bullets: ' + bullets.countLiving() + ' / ' + bullets.length, 32, 32);
-  game.debug.text 'Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 32
-  game.debug.text "Plugin v#{Phaser.Plugin.SceneGraph.VERSION} |
-                   (G)raph to the browser console
-                   (R)estart",
-                   32, game.camera.height - 32
+  {debug} = game
+  game.debug.renderGraph game.world, debug.bounds.left, debug.bounds.top, "16px monospace", 25
+  game.sceneGraphPlugin.renderColors debug.bounds.left, 550, "16px monospace", 25
   return
 
 EnemyTank = (index, game, player, bullets) ->
@@ -256,7 +270,7 @@ EnemyTank::update = ->
       bullet.rotation = @game.physics.arcade.moveToObject(bullet, @player, 500)
   return
 
-@game = game = new (Phaser.Game)(800, 800, Phaser.AUTO, 'phaser-example',
+@game = game = new (Phaser.Game)(1200, 800, Phaser.CANVAS, 'phaser-example',
   init:    init
   preload: preload
   create: create

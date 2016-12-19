@@ -1,5 +1,5 @@
 ###
-  Scene Graph plugin v{!major!}.{!minor!}.{!maintenance!}.{!build!} for Phaser
+  Scene Graph plugin {!major!}.{!minor!}.{!maintenance!} ({!build!}) for Phaser
 ###
 
 "use strict"
@@ -23,11 +23,22 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   join = (arr, str) ->
     _join.length = 0
-    for i in arr when i
+    for i in arr when i? and i isnt ''
       _join.push i
     _join.join str
 
   @config = freeze
+    colors: freeze
+      nonexisting:   "#808080"
+      invisible:     "#b0b0b0"
+      empty:         "#d381c3"
+      allExist:      "#a1c659"
+      someExist:     "#fda331"
+      noneExist:     "#fc6d24"
+      nonrenderable: "#505050"
+      nondrawable:   "#be643c"
+      dead:          "#fb0120"
+
     css: freeze
       dead:          "text-decoration: line-through"
       nonexisting:   "color: gray"
@@ -37,7 +48,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   @types = types = { 0: "SPRITE", 1: "BUTTON", 2: "IMAGE", 3: "GRAPHICS", 4: "TEXT", 5: "TILESPRITE", 6: "BITMAPTEXT", 7: "GROUP", 8: "RENDERTEXTURE", 9: "TILEMAP", 10: "TILEMAPLAYER", 11: "EMITTER", 12: "POLYGON", 13: "BITMAPDATA", 14: "CANVAS_FILTER", 15: "WEBGL_FILTER", 16: "ELLIPSE", 17: "SPRITEBATCH", 18: "RETROFONT", 19: "POINTER", 20: "ROPE", 21: "CIRCLE", 22: "RECTANGLE", 23: "LINE", 24: "MATRIX", 25: "POINT", 26: "ROUNDEDRECTANGLE", 27: "CREATURE", 28: "VIDEO"}
 
-  @VERSION = "{!major!}.{!minor!}.{!maintenance!}.{!build!}"
+  @VERSION = "{!major!}.{!minor!}.{!maintenance!} ({!build!})"
 
   @addTo = (game) ->
     game.plugins.add this
@@ -55,9 +66,25 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
       log "Use `game.debug.graph()` or `game.debug.graph(obj)`"
       @printStyles()
     Phaser.Utils.Debug::graph = @graph.bind this
+    Phaser.Utils.Debug::renderGraph = @renderGraph.bind this
     return
 
   # Helpers
+
+  color: (obj) ->
+    {colors} = @config
+    {length, total} = obj
+    hasTotal = total?
+    switch
+      when obj.exists         is no     then colors.nonexisting
+      when obj.visible        is no     then colors.invisible
+      when length             is 0      then colors.empty
+      when hasTotal and total is length then colors.allExist
+      when total              is 0      then colors.noneExist
+      when hasTotal                     then colors.someExist
+      when obj.renderable     is no     then colors.nonrenderable
+      when obj.renderOrderID  <  0      then colors.nondrawable
+      when obj.alive          is no     then colors.dead
 
   css: (obj) ->
     {css} = @config
@@ -78,7 +105,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
   getName: getName = (obj) ->
     {frame, frameName, name} = obj
     key = getKey obj
-    join [name, join [key, frame], "."], " "
+    join [name, join [key, frameName, frame], "."], " "
 
   graph: (obj = @game.stage, options = {
     collapse:        yes
@@ -109,7 +136,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     longName    = getName obj
     length      = children?.length or 0 # Button, Group, Sprite, Text …
     hasLength   = obj.length?           # Group, Emitter, Line(!)
-    hasLess     = total and total < length
+    hasLess     = total? and total < length
     type        = types[type] or '?'
     count       = switch
                   when hasLess   then "(#{total}/#{length})"
@@ -123,3 +150,26 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     for name, style of @config.css
       log "%c#{name}", style
     return
+
+  renderColors: (x = 0, y = 0, font = @game.debug.font, lineHeight = @game.debug.lineHeight) ->
+    {debug} = @game
+    for name, color of @config.colors
+      debug.text name, x, y, color, font
+      y += lineHeight
+    return
+
+  renderGraph: (obj = @game.world, x = 0, y = 0, font = @game.debug.font, lineHeight = @game.debug.lineHeight) ->
+    {debug} = @game
+
+    @renderObj obj, x, y, font
+    x += lineHeight
+
+    for child in obj.children
+      y += lineHeight
+      @renderObj child, x, y, font
+    return
+
+  renderObj: (obj, x, y, font) ->
+    @game.debug.text @map(obj), x, y, @color(obj), font
+    return
+

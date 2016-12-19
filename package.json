@@ -1,14 +1,14 @@
 {
   "name": "phaser-plugin-scene-graph",
-  "description": "Phaser plugin prints the display tree in the browser console",
+  "description": "Prints the display tree",
   "homepage": "https://samme.github.io/phaser-plugin-scene-graph/",
   "bugs": "https://github.com/samme/phaser-plugin-scene-graph/issues",
   "author": "samme",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/samme/phaser-plugin-scene-graph.git"
   },
   "scripts": {
     "start": "brunch watch --server",
@@ -22,7 +22,7 @@
     "auto-reload-brunch": "^2.0.0",
     "coffee-script-brunch": "^2.0.0",
     "coffeelint-brunch": "^2.0.0",
-    "jaded-brunch": "^2.3.0",
+    "jaded-brunch": "github:samme/jaded-brunch#options.runtimeFiles",
     "javascript-brunch": "^2.0.0",
     "jstransformer-coffee-script": "^1.0.0",
     "jstransformer-markdown": "^1.1.0",
