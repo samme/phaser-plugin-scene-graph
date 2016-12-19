@@ -1,12 +1,27 @@
-![Screenshot](https://samme.github.io/phaser-plugin-scene-graph/screenshot.png)
-# Phaser Scene Graph Plugin 👾
+Phaser Scene Graph Plugin 👾
+=========================
 
-Prints Phaser’s display tree in the console.
-[Demo](https://samme.github.io/phaser-plugin-scene-graph/).
+Prints Phaser’s display tree. [Demo](https://samme.github.io/phaser-plugin-scene-graph/).
 
 ```javascript
 game.plugins.add(Phaser.Plugin.SceneGraph);
+```
 
+Debug Canvas
+------------
+
+![Print on the debug canvas](https://samme.github.io/phaser-plugin-scene-graph/screenshot1.png)
+
+```javascript
+game.debug.renderGraph(obj, x, y, font, lineHeight);
+```
+
+Console
+-------
+
+![Print to the browser console](https://samme.github.io/phaser-plugin-scene-graph/screenshot2.png)
+
+```
 game.debug.graph() // everything; or
 
 game.debug.graph(obj) // 1 object & descendants
@@ -18,9 +33,12 @@ game.debug.graph(obj, { // options:
     skipDead:        false,
     skipNonexisting: false
 });
+```
 
-// Optional: configure
+Configure (optional)
+---------
 
+```
 game.plugins.add(Phaser.Plugin.SceneGraph, {
   css: {
     dead:          "text-decoration: line-through",
@@ -32,7 +50,8 @@ game.plugins.add(Phaser.Plugin.SceneGraph, {
 });
 ```
 
-## Tips
+Tips
+----
 
 ```javascript
 // Name your groups and emitters:

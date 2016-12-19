@@ -19,6 +19,8 @@ module.exports =
   plugins:
     coffeescript:
       bare: no
+    jade:
+      runtimeFiles: no
     version:
       fileRegExp: /\.(js|html)$/
   sourceMaps: no
