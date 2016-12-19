@@ -1,298 +1,277 @@
-
-/*
-  http://phaser.io/examples/v2/games/tanks
- */
-
 (function() {
-  "use strict";
-  var EnemyTank, bulletHitEnemy, bulletHitPlayer, bullets, create, currentSpeed, cursors, enemies, enemiesAlive, enemiesTotal, enemyBullets, explosions, fire, fireRate, game, graphWorld, init, land, logo, nextFire, preload, removeLogo, render, restart, shadow, tank, turret, update;
+  var ADD, Phaser, aliens, bulletTime, bullets, collisionHandler, create, createAliens, cursors, descend, enemyBullet, enemyBullets, enemyFires, enemyHitsPlayer, explosions, fireBullet, fireButton, firingTimer, game, init, lives, livingEnemies, player, preload, render, resetBullet, restart, score, scoreString, scoreText, setupInvader, starfield, stateText, update;
 
-  land = void 0;
+  Phaser = this.Phaser;
 
-  shadow = void 0;
+  ADD = Phaser.blendModes.ADD;
 
-  tank = void 0;
-
-  turret = void 0;
-
-  enemies = void 0;
-
-  enemyBullets = void 0;
-
-  enemiesTotal = 0;
-
-  enemiesAlive = 0;
-
-  explosions = void 0;
-
-  logo = void 0;
-
-  currentSpeed = 0;
-
-  cursors = void 0;
+  aliens = void 0;
 
   bullets = void 0;
 
-  fireRate = 500;
+  bulletTime = 0;
 
-  nextFire = 0;
+  cursors = void 0;
+
+  enemyBullet = void 0;
+
+  enemyBullets = void 0;
+
+  explosions = void 0;
+
+  fireButton = void 0;
+
+  firingTimer = 0;
+
+  lives = void 0;
+
+  livingEnemies = [];
+
+  player = void 0;
+
+  score = 0;
+
+  scoreString = '';
+
+  scoreText = void 0;
+
+  starfield = void 0;
+
+  stateText = void 0;
 
   init = function() {
-    game.debug.font = '16px monospace';
-    game.debug.lineHeight = 25;
+    var debug;
+    debug = game.debug;
+    debug.font = '16px monospace';
+    debug.lineHeight = 25;
+    game.clearBeforeRender = false;
     if (!game.sceneGraphPlugin) {
       game.sceneGraphPlugin = game.plugins.add(Phaser.Plugin.SceneGraph);
     }
   };
 
   preload = function() {
-    game.load.baseURL = 'tanks/';
-    game.load.atlas('tank', 'tanks.png', 'tanks.json');
-    game.load.atlas('enemy', 'enemy-tanks.png', 'tanks.json');
-    game.load.image('logo', 'logo.png');
+    game.load.path = 'invaders/';
     game.load.image('bullet', 'bullet.png');
-    game.load.image('earth', 'scorched_earth.png');
-    game.load.spritesheet('kaboom', 'explosion.png', 64, 64, 23);
+    game.load.image('enemyBullet', 'enemy-bullet.png');
+    game.load.spritesheet('invader', 'invader32x32x4.png', 32, 32);
+    game.load.image('ship', 'player.png');
+    game.load.spritesheet('kaboom', 'explode.png', 128, 128);
+    game.load.image('starfield', 'starfield.png');
   };
 
   create = function() {
-    var caption, events, explosionAnimation, i, j, keyboard, ref, world;
-    world = game.world;
-    world.setBounds(0, 0, 800, 800);
-    game.debug.bounds = world.bounds.clone().offset(world.bounds.right + 10, 20);
-    land = game.add.tileSprite(0, 0, world.width, world.height, 'earth');
-    land.fixedToCamera = true;
-    tank = game.add.sprite(0, 0, 'tank', 'tank1');
-    tank.anchor.setTo(0.5, 0.5);
-    tank.animations.add('move', ['tank1', 'tank2', 'tank3', 'tank4', 'tank5', 'tank6'], 20, true);
-    game.physics.enable(tank, Phaser.Physics.ARCADE);
-    tank.body.drag.set(0.5);
-    tank.body.maxVelocity.setTo(100, 100);
-    tank.body.collideWorldBounds = true;
-    turret = game.add.sprite(0, 0, 'tank', 'turret');
-    turret.anchor.setTo(0.3, 0.5);
-    enemyBullets = game.add.group(game.world, 'enemyBullets');
-    enemyBullets.enableBody = true;
-    enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
-    enemyBullets.createMultiple(3, 'bullet');
-    enemyBullets.setAll('anchor.x', 0.5);
-    enemyBullets.setAll('anchor.y', 0.5);
-    enemyBullets.setAll('outOfBoundsKill', true);
-    enemyBullets.setAll('checkWorldBounds', true);
-    enemies = [];
-    enemiesAlive = enemiesTotal = 3;
-    for (i = j = 1, ref = enemiesTotal; 1 <= ref ? j <= ref : j >= ref; i = 1 <= ref ? ++j : --j) {
-      enemies.push(new EnemyTank(i, game, tank, enemyBullets));
-      i++;
-    }
-    shadow = game.add.sprite(0, 0, 'tank', 'shadow');
-    shadow.anchor.setTo(0.5, 0.5);
-    bullets = game.add.group(game.world, 'bullets');
+    var caption, debug, i, livesText, ship, style, world;
+    debug = game.debug, world = game.world;
+    world.setBounds(0, 0, 800, 600);
+    debug.bounds = new Phaser.Rectangle(800, 0, game.width - world.width, game.height);
+    starfield = game.add.tileSprite(0, 0, 800, 600, 'starfield');
+    bullets = game.add.group(world, 'bullets');
     bullets.enableBody = true;
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    bullets.createMultiple(3, 'bullet', 0, false);
+    bullets.createMultiple(10, 'bullet');
     bullets.setAll('anchor.x', 0.5);
-    bullets.setAll('anchor.y', 0.5);
+    bullets.setAll('anchor.y', 1);
+    bullets.setAll('blendMode', ADD);
     bullets.setAll('outOfBoundsKill', true);
     bullets.setAll('checkWorldBounds', true);
-    explosions = game.add.group(game.world, 'explosions');
+    enemyBullets = game.add.group(world, 'enemyBullets');
+    enemyBullets.enableBody = true;
+    enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
+    enemyBullets.createMultiple(10, 'enemyBullet');
+    enemyBullets.setAll('anchor.x', 0.5);
+    enemyBullets.setAll('anchor.y', 1);
+    enemyBullets.setAll('blendMode', ADD);
+    enemyBullets.setAll('outOfBoundsKill', true);
+    enemyBullets.setAll('checkWorldBounds', true);
+    player = game.add.sprite(400, 500, 'ship');
+    player.anchor.setTo(0.5, 0.5);
+    game.physics.enable(player, Phaser.Physics.ARCADE);
+    aliens = game.add.group(world, 'aliens');
+    aliens.enableBody = true;
+    aliens.physicsBodyType = Phaser.Physics.ARCADE;
+    createAliens();
+    style = {
+      align: 'center',
+      fill: 'white',
+      font: '24px monospace'
+    };
+    scoreString = 'Score: ';
+    scoreText = game.add.text(10, 10, scoreString + score, style);
+    scoreText.name = 'scoreText';
+    lives = game.add.group(world, 'lives');
+    livesText = game.add.text(game.world.width - 100, 10, 'Lives', style);
+    livesText.name = 'livesText';
+    stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', style);
+    stateText.name = 'stateText';
+    stateText.anchor.setTo(0.5, 0.5);
+    stateText.visible = false;
     i = 0;
-    while (i < 10) {
-      explosionAnimation = explosions.create(0, 0, 'kaboom', [0], false);
-      explosionAnimation.alpha = 0.75;
-      explosionAnimation.anchor.setTo(0.5, 0.5);
-      explosionAnimation.animations.add('kaboom');
+    while (i < 3) {
+      ship = lives.create(game.world.width - 100 + 30 * i, 60, 'ship');
+      ship.anchor.setTo(0.5, 0.5);
+      ship.angle = 90;
+      ship.alpha = 0.5;
       i++;
     }
-    tank.bringToTop();
-    turret.bringToTop();
-    logo = game.add.sprite(0, 200, 'logo');
-    logo.fixedToCamera = true;
-    game.input.onDown.add(removeLogo, this);
-    game.camera.follow(tank);
-    game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
-    game.camera.focusOnXY(0, 0);
-    cursors = game.input.keyboard.createCursorKeys();
-    caption = game.add.text(0, 0, "Phaser v" + Phaser.VERSION + " | Plugin v" + Phaser.Plugin.SceneGraph.VERSION + " | (G)raph to the browser console (R)estart", {
+    explosions = game.add.group(world, 'explosions');
+    explosions.createMultiple(10, 'kaboom');
+    explosions.setAll('blendMode', ADD);
+    explosions.forEach(setupInvader, this);
+    caption = game.stage.addChild(game.make.text(0, 0, "Phaser v" + Phaser.VERSION + " Plugin v" + Phaser.Plugin.SceneGraph.VERSION, {
       fill: "white",
-      font: "16px monospace"
-    });
-    caption.alignIn(game.camera.view, Phaser.BOTTOM_LEFT, -10, -10);
-    keyboard = game.input.keyboard;
-    keyboard.addKey(Phaser.KeyCode.G).onDown.add(graphWorld, this);
-    keyboard.addKey(Phaser.KeyCode.R).onDown.add(restart, this);
-    events = game.time.events;
-    events.add(1000, function() {
-      console.log("Example: graph w/ defaults:");
-      return game.debug.graph();
-    });
-    events.add(2000, function() {
-      console.log("Example: graph w/ `filter`: include only named objects");
-      return game.debug.graph(game.world, {
-        collapse: true,
-        filter: function(obj) {
-          return obj.name;
-        }
-      });
-    });
-    events.add(3000, function() {
-      console.log("Example: graph w/ `map`: name only");
-      return game.debug.graph(game.world, {
-        collapse: true,
-        map: function(obj) {
-          var ref1;
-          return "" + (obj.name || obj.key || ((ref1 = obj.constructor) != null ? ref1.name : void 0));
-        }
-      });
-    });
+      font: "12px monospace"
+    }));
+    caption.alignIn(game.camera.view, Phaser.BOTTOM_LEFT, -5, -5);
+    cursors = game.input.keyboard.createCursorKeys();
+    fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   };
 
-  graphWorld = function() {
-    return game.debug.graph(game.world, {
-      collapse: false
-    });
+  createAliens = function() {
+    var alien, tween, x, y;
+    y = 0;
+    while (y < 4) {
+      x = 0;
+      while (x < 10) {
+        alien = aliens.create(x * 48, y * 50, 'invader');
+        alien.anchor.setTo(0.5, 0.5);
+        alien.animations.add('fly', [0, 1, 2, 3], 20, true);
+        alien.play('fly');
+        alien.body.moves = false;
+        x++;
+      }
+      y++;
+    }
+    aliens.x = 100;
+    aliens.y = 50;
+    tween = game.add.tween(aliens).to({
+      x: 200
+    }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+    tween.onLoop.add(descend, this);
   };
 
-  removeLogo = function() {
-    game.input.onDown.remove(removeLogo, this);
-    logo.kill();
+  setupInvader = function(invader) {
+    invader.anchor.x = 0.5;
+    invader.anchor.y = 0.5;
+    invader.animations.add('kaboom');
   };
 
-  restart = function() {
-    return game.state.restart();
+  descend = function() {
+    aliens.y += 10;
   };
 
   update = function() {
-    var enemy, j, len;
-    game.physics.arcade.overlap(enemyBullets, tank, bulletHitPlayer, null, this);
-    enemiesAlive = 0;
-    for (j = 0, len = enemies.length; j < len; j++) {
-      enemy = enemies[j];
-      if (!enemy.alive) {
-        continue;
+    starfield.tilePosition.y += 1;
+    if (player.alive) {
+      player.body.velocity.setTo(0, 0);
+      if (cursors.left.isDown) {
+        player.body.velocity.x = -200;
+      } else if (cursors.right.isDown) {
+        player.body.velocity.x = 200;
       }
-      enemiesAlive++;
-      game.physics.arcade.collide(tank, enemy.tank);
-      game.physics.arcade.overlap(bullets, enemy.tank, bulletHitEnemy, null, this);
-      enemy.update();
-    }
-    if (cursors.left.isDown) {
-      tank.angle -= 3;
-    } else if (cursors.right.isDown) {
-      tank.angle += 3;
-    }
-    if (cursors.up.isDown) {
-      currentSpeed = 300;
-    } else if (currentSpeed > 0) {
-      currentSpeed -= 4;
-    }
-    if (currentSpeed > 0) {
-      game.physics.arcade.velocityFromRotation(tank.rotation, currentSpeed, tank.body.velocity);
-    }
-    land.tilePosition.x = -game.camera.x;
-    land.tilePosition.y = -game.camera.y;
-    shadow.x = tank.x;
-    shadow.y = tank.y;
-    shadow.rotation = tank.rotation;
-    turret.x = tank.x;
-    turret.y = tank.y;
-    turret.rotation = game.physics.arcade.angleToPointer(turret);
-    if (game.input.activePointer.isDown) {
-      fire();
-    }
-  };
-
-  bulletHitPlayer = function(tank, bullet) {
-    bullet.kill();
-  };
-
-  bulletHitEnemy = function(tank, bullet) {
-    var destroyed, explosionAnimation, size;
-    bullet.kill();
-    destroyed = tank._parent.damage();
-    size = destroyed ? 2 : 1;
-    explosionAnimation = explosions.getFirstExists(false);
-    explosionAnimation.reset(tank.x, tank.y);
-    explosionAnimation.scale.setTo(game.rnd.realInRange(0.5 * size, 1.5 * size));
-    explosionAnimation.play('kaboom', 30, false, true);
-  };
-
-  fire = function() {
-    var bullet;
-    if (game.time.now > nextFire && bullets.countDead() > 0) {
-      nextFire = game.time.now + fireRate;
-      bullet = bullets.getFirstExists(false);
-      bullet.reset(turret.x, turret.y);
-      bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer, 500);
+      if (fireButton.isDown) {
+        fireBullet();
+      }
+      if (game.time.now > firingTimer) {
+        enemyFires();
+      }
+      game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
+      game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
     }
   };
 
   render = function() {
-    var debug;
+    var debug, lineHeight, x, y;
     debug = game.debug;
-    game.debug.renderGraph(game.world, debug.bounds.left, debug.bounds.top, "16px monospace", 25);
-    game.sceneGraphPlugin.renderColors(debug.bounds.left, 550, "16px monospace", 25);
+    x = debug.bounds.left;
+    y = debug.bounds.top;
+    lineHeight = 25;
+    debug.text('game.debug.renderGraph()', x, y += lineHeight, 'white', debug.font);
+    debug.text('------------------------', x, y += lineHeight, 'white', debug.font);
+    debug.renderGraph(game.world, x, y += lineHeight, debug.font, 25);
+    y = 375;
+    game.sceneGraphPlugin.renderColors(x, y, debug.font, 25);
   };
 
-  EnemyTank = function(index, game, player, bullets) {
-    var x, y;
-    x = game.world.randomX;
-    y = game.world.randomY;
-    this.game = game;
-    this.health = 3;
-    this.player = player;
-    this.bullets = bullets;
-    this.fireRate = 1000;
-    this.nextFire = 0;
-    this.alive = true;
-    this.name = "enemyTank" + index;
-    this.shadow = game.add.sprite(x, y, 'enemy', 'shadow');
-    this.tank = game.add.sprite(x, y, 'enemy', 'tank1');
-    this.turret = game.add.sprite(x, y, 'enemy', 'turret');
-    this.shadow.anchor.set(0.5);
-    this.tank.anchor.set(0.5);
-    this.turret.anchor.set(0.3, 0.5);
-    this.tank.name = "tank" + index;
-    this.tank._parent = this;
-    game.physics.enable(this.tank, Phaser.Physics.ARCADE);
-    this.tank.body.immovable = false;
-    this.tank.body.collideWorldBounds = true;
-    this.tank.body.bounce.setTo(1, 1);
-    this.tank.angle = game.rnd.angle();
-    game.physics.arcade.velocityFromRotation(this.tank.rotation, 100, this.tank.body.velocity);
-  };
-
-  EnemyTank.prototype.damage = function() {
-    this.health -= 1;
-    if (this.health <= 0) {
-      this.alive = false;
-      this.shadow.kill();
-      this.tank.kill();
-      this.turret.kill();
-      return true;
+  collisionHandler = function(bullet, alien) {
+    var explosion;
+    bullet.kill();
+    alien.kill();
+    score += 20;
+    scoreText.text = scoreString + score;
+    explosion = explosions.getFirstExists(false);
+    explosion.reset(alien.body.x, alien.body.y);
+    explosion.play('kaboom', 30, false, true);
+    if (aliens.countLiving() === 0) {
+      score += 1000;
+      scoreText.text = scoreString + score;
+      enemyBullets.callAll('kill', this);
+      stateText.text = 'VICTORY\n\n[restart]';
+      stateText.visible = true;
+      game.input.onTap.addOnce(restart, this);
     }
-    return false;
   };
 
-  EnemyTank.prototype.update = function() {
+  enemyHitsPlayer = function(player, bullet) {
+    var explosion, live;
+    bullet.kill();
+    live = lives.getFirstAlive();
+    if (live) {
+      live.kill();
+    }
+    explosion = explosions.getFirstExists(false);
+    explosion.reset(player.body.x, player.body.y);
+    explosion.play('kaboom', 30, false, true);
+    if (lives.countLiving() < 1) {
+      player.kill();
+      enemyBullets.callAll('kill');
+      stateText.text = 'GAME OVER\n\n[restart]';
+      stateText.visible = true;
+      game.input.onTap.addOnce(restart, this);
+    }
+  };
+
+  enemyFires = function() {
+    var random, shooter;
+    enemyBullet = enemyBullets.getFirstExists(false);
+    livingEnemies.length = 0;
+    aliens.forEachAlive(function(alien) {
+      livingEnemies.push(alien);
+    });
+    if (enemyBullet && livingEnemies.length > 0) {
+      random = game.rnd.integerInRange(0, livingEnemies.length - 1);
+      shooter = livingEnemies[random];
+      enemyBullet.reset(shooter.body.x, shooter.body.y);
+      game.physics.arcade.moveToObject(enemyBullet, player, 120);
+      firingTimer = game.time.now + 2000;
+    }
+  };
+
+  fireBullet = function() {
     var bullet;
-    this.shadow.x = this.tank.x;
-    this.shadow.y = this.tank.y;
-    this.shadow.rotation = this.tank.rotation;
-    this.turret.x = this.tank.x;
-    this.turret.y = this.tank.y;
-    this.turret.rotation = this.game.physics.arcade.angleBetween(this.tank, this.player);
-    if (this.game.physics.arcade.distanceBetween(this.tank, this.player) < 300) {
-      if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0) {
-        this.nextFire = this.game.time.now + this.fireRate;
-        bullet = this.bullets.getFirstDead();
-        bullet.reset(this.turret.x, this.turret.y);
-        bullet.rotation = this.game.physics.arcade.moveToObject(bullet, this.player, 500);
+    if (game.time.now > bulletTime) {
+      bullet = bullets.getFirstExists(false);
+      if (bullet) {
+        bullet.reset(player.x, player.y + 8);
+        bullet.body.velocity.y = -400;
+        bulletTime = game.time.now + 200;
       }
     }
   };
 
-  this.game = game = new Phaser.Game(1200, 800, Phaser.CANVAS, 'phaser-example', {
+  resetBullet = function(bullet) {
+    bullet.kill();
+  };
+
+  restart = function() {
+    lives.callAll('revive');
+    aliens.removeAll();
+    createAliens();
+    player.revive();
+    stateText.visible = false;
+  };
+
+  game = new Phaser.Game(1200, 600, Phaser.CANVAS, 'phaser-example', {
     init: init,
     preload: preload,
     create: create,
