@@ -6,7 +6,14 @@
 
 {freeze, seal} = Object
 
+{Phaser, PIXI} = this
+
 {extend} = Phaser.Utils
+
+Phaser.BitmapData   ::toString = -> "[Phaser.BitmapData]"
+Phaser.RenderTexture::toString = -> "[Phaser.RenderTexture]"
+Phaser.Video        ::toString = -> "[Phaser.Video]"
+PIXI.Texture        ::toString = -> "[PIXI.Texture]"
 
 Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 

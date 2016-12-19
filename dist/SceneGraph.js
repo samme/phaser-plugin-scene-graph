@@ -1,17 +1,35 @@
 
 /*
-  Scene Graph plugin 0.6.0 (24) for Phaser
+  Scene Graph plugin 0.7.0 (1) for Phaser
  */
 
 (function() {
   "use strict";
-  var SceneGraph, extend, freeze, seal,
+  var PIXI, Phaser, SceneGraph, extend, freeze, ref, seal,
     extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   freeze = Object.freeze, seal = Object.seal;
 
+  ref = this, Phaser = ref.Phaser, PIXI = ref.PIXI;
+
   extend = Phaser.Utils.extend;
+
+  Phaser.BitmapData.prototype.toString = function() {
+    return "[Phaser.BitmapData]";
+  };
+
+  Phaser.RenderTexture.prototype.toString = function() {
+    return "[Phaser.RenderTexture]";
+  };
+
+  Phaser.Video.prototype.toString = function() {
+    return "[Phaser.Video]";
+  };
+
+  PIXI.Texture.prototype.toString = function() {
+    return "[PIXI.Texture]";
+  };
 
   Phaser.Plugin.SceneGraph = freeze(SceneGraph = (function(superClass) {
     var _join, getKey, getName, group, groupCollapsed, groupEnd, join, log, none, types;
@@ -101,7 +119,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.VERSION = "0.6.0 (24)";
+    SceneGraph.VERSION = "0.7.0 (1)";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -233,17 +251,17 @@
     };
 
     SceneGraph.prototype.printStyles = function() {
-      var name, ref, style;
+      var name, ref1, style;
       log("Objects are styled:");
-      ref = this.config.css;
-      for (name in ref) {
-        style = ref[name];
+      ref1 = this.config.css;
+      for (name in ref1) {
+        style = ref1[name];
         log("%c" + name, style);
       }
     };
 
     SceneGraph.prototype.renderColors = function(x, y, font, lineHeight) {
-      var color, debug, name, ref;
+      var color, debug, name, ref1;
       if (x == null) {
         x = 0;
       }
@@ -257,16 +275,16 @@
         lineHeight = this.game.debug.lineHeight;
       }
       debug = this.game.debug;
-      ref = this.config.colors;
-      for (name in ref) {
-        color = ref[name];
+      ref1 = this.config.colors;
+      for (name in ref1) {
+        color = ref1[name];
         debug.text(name, x, y, color, font);
         y += lineHeight;
       }
     };
 
     SceneGraph.prototype.renderGraph = function(obj, x, y, font, lineHeight) {
-      var child, debug, j, len, ref;
+      var child, debug, j, len, ref1;
       if (obj == null) {
         obj = this.game.world;
       }
@@ -285,9 +303,9 @@
       debug = this.game.debug;
       this.renderObj(obj, x, y, font);
       x += lineHeight;
-      ref = obj.children;
-      for (j = 0, len = ref.length; j < len; j++) {
-        child = ref[j];
+      ref1 = obj.children;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        child = ref1[j];
         y += lineHeight;
         this.renderObj(child, x, y, font);
       }
