@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin v0.5.1.1 for Phaser
+  Scene Graph plugin 0.6.0 (24) for Phaser
  */
 
 (function() {
@@ -41,7 +41,7 @@
       _join.length = 0;
       for (j = 0, len = arr.length; j < len; j++) {
         i = arr[j];
-        if (i) {
+        if ((i != null) && i !== '') {
           _join.push(i);
         }
       }
@@ -49,6 +49,17 @@
     };
 
     SceneGraph.config = freeze({
+      colors: freeze({
+        nonexisting: "#808080",
+        invisible: "#b0b0b0",
+        empty: "#d381c3",
+        allExist: "#a1c659",
+        someExist: "#fda331",
+        noneExist: "#fc6d24",
+        nonrenderable: "#505050",
+        nondrawable: "#be643c",
+        dead: "#fb0120"
+      }),
       css: freeze({
         dead: "text-decoration: line-through",
         nonexisting: "color: gray",
@@ -90,7 +101,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.VERSION = "0.5.1.1";
+    SceneGraph.VERSION = "0.6.0 (24)";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -110,6 +121,34 @@
         this.printStyles();
       }
       Phaser.Utils.Debug.prototype.graph = this.graph.bind(this);
+      Phaser.Utils.Debug.prototype.renderGraph = this.renderGraph.bind(this);
+    };
+
+    SceneGraph.prototype.color = function(obj) {
+      var colors, hasTotal, length, total;
+      colors = this.config.colors;
+      length = obj.length, total = obj.total;
+      hasTotal = total != null;
+      switch (false) {
+        case obj.exists !== false:
+          return colors.nonexisting;
+        case obj.visible !== false:
+          return colors.invisible;
+        case length !== 0:
+          return colors.empty;
+        case !(hasTotal && total === length):
+          return colors.allExist;
+        case total !== 0:
+          return colors.noneExist;
+        case !hasTotal:
+          return colors.someExist;
+        case obj.renderable !== false:
+          return colors.nonrenderable;
+        case !(obj.renderOrderID < 0):
+          return colors.nondrawable;
+        case obj.alive !== false:
+          return colors.dead;
+      }
     };
 
     SceneGraph.prototype.css = function(obj) {
@@ -135,7 +174,7 @@
       var frame, frameName, key, name;
       frame = obj.frame, frameName = obj.frameName, name = obj.name;
       key = getKey(obj);
-      return join([name, join([key, frame], ".")], " ");
+      return join([name, join([key, frameName, frame], ".")], " ");
     };
 
     SceneGraph.prototype.graph = function(obj, options) {
@@ -178,7 +217,7 @@
       longName = getName(obj);
       length = (children != null ? children.length : void 0) || 0;
       hasLength = obj.length != null;
-      hasLess = total && total < length;
+      hasLess = (total != null) && total < length;
       type = types[type] || '?';
       count = (function() {
         switch (false) {
@@ -201,6 +240,61 @@
         style = ref[name];
         log("%c" + name, style);
       }
+    };
+
+    SceneGraph.prototype.renderColors = function(x, y, font, lineHeight) {
+      var color, debug, name, ref;
+      if (x == null) {
+        x = 0;
+      }
+      if (y == null) {
+        y = 0;
+      }
+      if (font == null) {
+        font = this.game.debug.font;
+      }
+      if (lineHeight == null) {
+        lineHeight = this.game.debug.lineHeight;
+      }
+      debug = this.game.debug;
+      ref = this.config.colors;
+      for (name in ref) {
+        color = ref[name];
+        debug.text(name, x, y, color, font);
+        y += lineHeight;
+      }
+    };
+
+    SceneGraph.prototype.renderGraph = function(obj, x, y, font, lineHeight) {
+      var child, debug, j, len, ref;
+      if (obj == null) {
+        obj = this.game.world;
+      }
+      if (x == null) {
+        x = 0;
+      }
+      if (y == null) {
+        y = 0;
+      }
+      if (font == null) {
+        font = this.game.debug.font;
+      }
+      if (lineHeight == null) {
+        lineHeight = this.game.debug.lineHeight;
+      }
+      debug = this.game.debug;
+      this.renderObj(obj, x, y, font);
+      x += lineHeight;
+      ref = obj.children;
+      for (j = 0, len = ref.length; j < len; j++) {
+        child = ref[j];
+        y += lineHeight;
+        this.renderObj(child, x, y, font);
+      }
+    };
+
+    SceneGraph.prototype.renderObj = function(obj, x, y, font) {
+      this.game.debug.text(this.map(obj), x, y, this.color(obj), font);
     };
 
     return SceneGraph;

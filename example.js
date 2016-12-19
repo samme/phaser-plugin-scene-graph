@@ -38,7 +38,11 @@
   nextFire = 0;
 
   init = function() {
-    game.plugins.add(Phaser.Plugin.SceneGraph);
+    game.debug.font = '16px monospace';
+    game.debug.lineHeight = 25;
+    if (!game.sceneGraphPlugin) {
+      game.sceneGraphPlugin = game.plugins.add(Phaser.Plugin.SceneGraph);
+    }
   };
 
   preload = function() {
@@ -52,8 +56,10 @@
   };
 
   create = function() {
-    var events, explosionAnimation, i, j, keyboard, ref, world;
+    var caption, events, explosionAnimation, i, j, keyboard, ref, world;
     world = game.world;
+    world.setBounds(0, 0, 800, 800);
+    game.debug.bounds = world.bounds.clone().offset(world.bounds.right + 10, 20);
     land = game.add.tileSprite(0, 0, world.width, world.height, 'earth');
     land.fixedToCamera = true;
     tank = game.add.sprite(0, 0, 'tank', 'tank1');
@@ -68,7 +74,7 @@
     enemyBullets = game.add.group(game.world, 'enemyBullets');
     enemyBullets.enableBody = true;
     enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
-    enemyBullets.createMultiple(30, 'bullet');
+    enemyBullets.createMultiple(3, 'bullet');
     enemyBullets.setAll('anchor.x', 0.5);
     enemyBullets.setAll('anchor.y', 0.5);
     enemyBullets.setAll('outOfBoundsKill', true);
@@ -84,7 +90,7 @@
     bullets = game.add.group(game.world, 'bullets');
     bullets.enableBody = true;
     bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    bullets.createMultiple(10, 'bullet', 0, false);
+    bullets.createMultiple(3, 'bullet', 0, false);
     bullets.setAll('anchor.x', 0.5);
     bullets.setAll('anchor.y', 0.5);
     bullets.setAll('outOfBoundsKill', true);
@@ -107,6 +113,11 @@
     game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
     game.camera.focusOnXY(0, 0);
     cursors = game.input.keyboard.createCursorKeys();
+    caption = game.add.text(0, 0, "Phaser v" + Phaser.VERSION + " | Plugin v" + Phaser.Plugin.SceneGraph.VERSION + " | (G)raph to the browser console (R)estart", {
+      fill: "white",
+      font: "16px monospace"
+    });
+    caption.alignIn(game.camera.view, Phaser.BOTTOM_LEFT, -10, -10);
     keyboard = game.input.keyboard;
     keyboard.addKey(Phaser.KeyCode.G).onDown.add(graphWorld, this);
     keyboard.addKey(Phaser.KeyCode.R).onDown.add(restart, this);
@@ -118,6 +129,7 @@
     events.add(2000, function() {
       console.log("Example: graph w/ `filter`: include only named objects");
       return game.debug.graph(game.world, {
+        collapse: true,
         filter: function(obj) {
           return obj.name;
         }
@@ -126,6 +138,7 @@
     events.add(3000, function() {
       console.log("Example: graph w/ `map`: name only");
       return game.debug.graph(game.world, {
+        collapse: true,
         map: function(obj) {
           var ref1;
           return "" + (obj.name || obj.key || ((ref1 = obj.constructor) != null ? ref1.name : void 0));
@@ -215,8 +228,10 @@
   };
 
   render = function() {
-    game.debug.text('Enemies: ' + enemiesAlive + ' / ' + enemiesTotal, 32, 32);
-    game.debug.text("Plugin v" + Phaser.Plugin.SceneGraph.VERSION + " | (G)raph to the browser console (R)estart", 32, game.camera.height - 32);
+    var debug;
+    debug = game.debug;
+    game.debug.renderGraph(game.world, debug.bounds.left, debug.bounds.top, "16px monospace", 25);
+    game.sceneGraphPlugin.renderColors(debug.bounds.left, 550, "16px monospace", 25);
   };
 
   EnemyTank = function(index, game, player, bullets) {
@@ -277,7 +292,7 @@
     }
   };
 
-  this.game = game = new Phaser.Game(800, 800, Phaser.AUTO, 'phaser-example', {
+  this.game = game = new Phaser.Game(1200, 800, Phaser.CANVAS, 'phaser-example', {
     init: init,
     preload: preload,
     create: create,
