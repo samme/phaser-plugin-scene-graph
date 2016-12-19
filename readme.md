@@ -21,7 +21,7 @@ Console
 
 ![Print to the browser console](https://samme.github.io/phaser-plugin-scene-graph/screenshot2.png)
 
-```
+```javascript
 game.debug.graph() // everything; or
 
 game.debug.graph(obj) // 1 object & descendants
@@ -38,7 +38,7 @@ game.debug.graph(obj, { // options:
 Configure (optional)
 ---------
 
-```
+```javascript
 game.plugins.add(Phaser.Plugin.SceneGraph, {
   css: {
     dead:          "text-decoration: line-through",
