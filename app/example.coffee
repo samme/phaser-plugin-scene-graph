@@ -1,277 +1,275 @@
-###
-  http://phaser.io/examples/v2/games/tanks
-###
+# [stdin]:50:50:4: [warning] Assignment of global variable 'enemyBullets'
+# [stdin]:202:202:8: [warning] Operator '==' is not supported in CoffeeScript, use '===' instead
+# [stdin]:221:221:4: [warning] Assignment of global variable 'live'
+# [stdin]:284:284:8: [warning] Assignment of global variable 'bullet'
 
-"use strict"
+{Phaser} = this
 
-land = undefined
-shadow = undefined
-tank = undefined
-turret = undefined
-enemies = undefined
-enemyBullets = undefined
-enemiesTotal = 0
-enemiesAlive = 0
-explosions = undefined
-logo = undefined
-currentSpeed = 0
-cursors = undefined
+{ADD} = Phaser.blendModes
+
+aliens = undefined
 bullets = undefined
-fireRate = 500
-nextFire = 0
+bulletTime = 0
+cursors = undefined
+enemyBullet = undefined
+enemyBullets = undefined
+explosions = undefined
+fireButton = undefined
+firingTimer = 0
+lives = undefined
+livingEnemies = []
+player = undefined
+score = 0
+scoreString = ''
+scoreText = undefined
+starfield = undefined
+stateText = undefined
 
 init = ->
-  game.debug.font = '16px monospace'
-  game.debug.lineHeight = 25
+  {debug} = game
+  debug.font = '16px monospace'
+  debug.lineHeight = 25
+  game.clearBeforeRender = no
   unless game.sceneGraphPlugin
     game.sceneGraphPlugin = game.plugins.add Phaser.Plugin.SceneGraph
   return
 
 preload = ->
-  game.load.baseURL = 'tanks/'
-  game.load.atlas 'tank', 'tanks.png', 'tanks.json'
-  game.load.atlas 'enemy', 'enemy-tanks.png', 'tanks.json'
-  game.load.image 'logo', 'logo.png'
+  game.load.path = 'invaders/'
   game.load.image 'bullet', 'bullet.png'
-  game.load.image 'earth', 'scorched_earth.png'
-  game.load.spritesheet 'kaboom', 'explosion.png', 64, 64, 23
+  game.load.image 'enemyBullet', 'enemy-bullet.png'
+  game.load.spritesheet 'invader', 'invader32x32x4.png', 32, 32
+  game.load.image 'ship', 'player.png'
+  game.load.spritesheet 'kaboom', 'explode.png', 128, 128
+  game.load.image 'starfield', 'starfield.png'
   return
 
 create = ->
-  {world} = game
-  world.setBounds 0, 0, 800, 800
-  game.debug.bounds = world.bounds.clone().offset world.bounds.right + 10, 20
-  #  Our tiled scrolling background
-  land = game.add.tileSprite(0, 0, world.width, world.height, 'earth')
-  land.fixedToCamera = true
-  #  The base of our tank
-  tank = game.add.sprite(0, 0, 'tank', 'tank1')
-  tank.anchor.setTo 0.5, 0.5
-  tank.animations.add 'move', [
-    'tank1'
-    'tank2'
-    'tank3'
-    'tank4'
-    'tank5'
-    'tank6'
-  ], 20, true
-  #  This will force it to decelerate and limit its speed
-  game.physics.enable tank, Phaser.Physics.ARCADE
-  tank.body.drag.set 0.5
-  tank.body.maxVelocity.setTo 100, 100
-  tank.body.collideWorldBounds = true
-  #  Finally the turret that we place on-top of the tank body
-  turret = game.add.sprite(0, 0, 'tank', 'turret')
-  turret.anchor.setTo 0.3, 0.5
-  #  The enemies bullet group
-  enemyBullets = game.add.group(game.world, 'enemyBullets')
-  enemyBullets.enableBody = true
-  enemyBullets.physicsBodyType = Phaser.Physics.ARCADE
-  enemyBullets.createMultiple 3, 'bullet'
-  enemyBullets.setAll 'anchor.x', 0.5
-  enemyBullets.setAll 'anchor.y', 0.5
-  enemyBullets.setAll 'outOfBoundsKill', true
-  enemyBullets.setAll 'checkWorldBounds', true
-  #  Create some baddies to waste :)
-  enemies = []
-  enemiesAlive = enemiesTotal = 3
-  for i in [1..enemiesTotal]
-    enemies.push new EnemyTank(i, game, tank, enemyBullets)
-    i++
-  #  A shadow below our tank
-  shadow = game.add.sprite(0, 0, 'tank', 'shadow')
-  shadow.anchor.setTo 0.5, 0.5
+  {debug, world} = game
+  world.setBounds 0, 0, 800, 600
+  debug.bounds = new Phaser.Rectangle 800, 0, game.width - world.width, game.height
+  #  The scrolling starfield background
+  starfield = game.add.tileSprite(0, 0, 800, 600, 'starfield')
   #  Our bullet group
-  bullets = game.add.group(game.world, 'bullets')
+  bullets = game.add.group world, 'bullets'
   bullets.enableBody = true
   bullets.physicsBodyType = Phaser.Physics.ARCADE
-  bullets.createMultiple 3, 'bullet', 0, false
+  bullets.createMultiple 10, 'bullet'
   bullets.setAll 'anchor.x', 0.5
-  bullets.setAll 'anchor.y', 0.5
+  bullets.setAll 'anchor.y', 1
+  bullets.setAll 'blendMode', ADD
   bullets.setAll 'outOfBoundsKill', true
   bullets.setAll 'checkWorldBounds', true
-  #  Explosion pool
-  explosions = game.add.group(game.world, 'explosions')
+  # The enemy's bullets
+  enemyBullets = game.add.group world, 'enemyBullets'
+  enemyBullets.enableBody = true
+  enemyBullets.physicsBodyType = Phaser.Physics.ARCADE
+  enemyBullets.createMultiple 10, 'enemyBullet'
+  enemyBullets.setAll 'anchor.x', 0.5
+  enemyBullets.setAll 'anchor.y', 1
+  enemyBullets.setAll 'blendMode', ADD
+  enemyBullets.setAll 'outOfBoundsKill', true
+  enemyBullets.setAll 'checkWorldBounds', true
+  #  The hero!
+  player = game.add.sprite(400, 500, 'ship')
+  player.anchor.setTo 0.5, 0.5
+  game.physics.enable player, Phaser.Physics.ARCADE
+  #  The baddies!
+  aliens = game.add.group world, 'aliens'
+  aliens.enableBody = true
+  aliens.physicsBodyType = Phaser.Physics.ARCADE
+  createAliens()
+  style = align: 'center', fill: 'white', font: '24px monospace'
+  #  The score
+  scoreString = 'Score: '
+  scoreText = game.add.text(10, 10, scoreString + score, style)
+  scoreText.name = 'scoreText'
+  #  Lives
+  lives = game.add.group world, 'lives'
+  livesText = game.add.text game.world.width - 100, 10, 'Lives', style
+  livesText.name = 'livesText'
+  #  Text
+  stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', style)
+  stateText.name = 'stateText'
+  stateText.anchor.setTo 0.5, 0.5
+  stateText.visible = false
   i = 0
-  while i < 10
-    explosionAnimation = explosions.create(0, 0, 'kaboom', [ 0 ], false)
-    explosionAnimation.alpha = 0.75
-    explosionAnimation.anchor.setTo 0.5, 0.5
-    explosionAnimation.animations.add 'kaboom'
+  while i < 3
+    ship = lives.create(game.world.width - 100 + 30 * i, 60, 'ship')
+    ship.anchor.setTo 0.5, 0.5
+    ship.angle = 90
+    ship.alpha = 0.5
     i++
-  tank.bringToTop()
-  turret.bringToTop()
-  logo = game.add.sprite(0, 200, 'logo')
-  logo.fixedToCamera = true
-  game.input.onDown.add removeLogo, this
-  game.camera.follow tank
-  game.camera.deadzone = new (Phaser.Rectangle)(150, 150, 500, 300)
-  game.camera.focusOnXY 0, 0
-  cursors = game.input.keyboard.createCursorKeys()
-
-  caption = game.add.text 0, 0,
-    "Phaser v#{Phaser.VERSION} |
-    Plugin v#{Phaser.Plugin.SceneGraph.VERSION} |
-    (G)raph to the browser console
-    (R)estart", {
+  #  An explosion pool
+  explosions = game.add.group world, 'explosions'
+  explosions.createMultiple 10, 'kaboom'
+  explosions.setAll 'blendMode', ADD
+  explosions.forEach setupInvader, this
+  #  Caption
+  caption = game.stage.addChild game.make.text 0, 0,
+    "Phaser v#{Phaser.VERSION}
+    Plugin v#{Phaser.Plugin.SceneGraph.VERSION}", {
       fill: "white"
-      font: "16px monospace"
+      font: "12px monospace"
     }
-  caption.alignIn game.camera.view, Phaser.BOTTOM_LEFT, -10, -10
-
-  {keyboard} = game.input
-
-  keyboard.addKey(Phaser.KeyCode.G).onDown.add graphWorld, this
-  keyboard.addKey(Phaser.KeyCode.R).onDown.add restart,    this
-
-  {events} = game.time
-
-  events.add 1000, ->
-    console.log "Example: graph w/ defaults:"
-    game.debug.graph()
-
-  events.add 2000, ->
-    console.log "Example: graph w/ `filter`: include only named objects"
-    game.debug.graph game.world,
-      collapse: yes
-      filter: (obj) -> obj.name
-
-  events.add 3000, ->
-    console.log "Example: graph w/ `map`: name only"
-    game.debug.graph game.world,
-      collapse: yes
-      map: (obj) ->
-        "#{obj.name or obj.key or obj.constructor?.name}"
-
+  caption.alignIn game.camera.view, Phaser.BOTTOM_LEFT, -5, -5
+  #  And some controls to play the game with
+  cursors = game.input.keyboard.createCursorKeys()
+  fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
   return
 
-graphWorld = ->
-  game.debug.graph game.world, collapse: no
-
-removeLogo = ->
-  game.input.onDown.remove removeLogo, this
-  logo.kill()
+createAliens = ->
+  y = 0
+  while y < 4
+    x = 0
+    while x < 10
+      alien = aliens.create(x * 48, y * 50, 'invader')
+      alien.anchor.setTo 0.5, 0.5
+      alien.animations.add 'fly', [0, 1, 2, 3], 20, true
+      alien.play 'fly'
+      alien.body.moves = false
+      x++
+    y++
+  aliens.x = 100
+  aliens.y = 50
+  #  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
+  tween = game.add.tween(aliens).to({ x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true)
+  #  When the tween loops it calls descend
+  tween.onLoop.add descend, this
   return
 
-restart = ->
-  game.state.restart()
+setupInvader = (invader) ->
+  invader.anchor.x = 0.5
+  invader.anchor.y = 0.5
+  invader.animations.add 'kaboom'
+  return
+
+descend = ->
+  aliens.y += 10
+  return
 
 update = ->
-  game.physics.arcade.overlap enemyBullets, tank, bulletHitPlayer, null, this
-  enemiesAlive = 0
-  for enemy in enemies when enemy.alive
-    enemiesAlive++
-    game.physics.arcade.collide tank, enemy.tank
-    game.physics.arcade.overlap bullets, enemy.tank, bulletHitEnemy, null, this
-    enemy.update()
-
-  if      cursors.left.isDown  then tank.angle -= 3
-  else if cursors.right.isDown then tank.angle += 3
-
-  if      cursors.up.isDown    then currentSpeed = 300
-  else if currentSpeed > 0     then currentSpeed -= 4
-
-  if currentSpeed > 0
-    game.physics.arcade.velocityFromRotation tank.rotation, currentSpeed, tank.body.velocity
-
-  land.tilePosition.x = -game.camera.x
-  land.tilePosition.y = -game.camera.y
-
-  #  Position all the parts and align rotations
-  shadow.x = tank.x
-  shadow.y = tank.y
-  shadow.rotation = tank.rotation
-
-  turret.x = tank.x
-  turret.y = tank.y
-  turret.rotation = game.physics.arcade.angleToPointer(turret)
-
-  if game.input.activePointer.isDown
-    fire() # Boom!
-  return
-
-bulletHitPlayer = (tank, bullet) ->
-  bullet.kill()
-  return
-
-bulletHitEnemy = (tank, bullet) ->
-  bullet.kill()
-  destroyed = tank._parent.damage()
-  size = if destroyed then 2 else 1
-  explosionAnimation = explosions.getFirstExists(false)
-  explosionAnimation.reset tank.x, tank.y
-  explosionAnimation.scale.setTo game.rnd.realInRange(0.5 * size, 1.5 * size)
-  explosionAnimation.play 'kaboom', 30, false, true
-  return
-
-fire = ->
-  if game.time.now > nextFire and bullets.countDead() > 0
-    nextFire = game.time.now + fireRate
-    bullet = bullets.getFirstExists(false)
-    bullet.reset turret.x, turret.y
-    bullet.rotation = game.physics.arcade.moveToPointer(bullet, 1000, game.input.activePointer, 500)
+  #  Scroll the background
+  starfield.tilePosition.y += 1
+  if player.alive
+    #  Reset the player, then check for movement keys
+    player.body.velocity.setTo 0, 0
+    if cursors.left.isDown
+      player.body.velocity.x = -200
+    else if cursors.right.isDown
+      player.body.velocity.x = 200
+    #  Firing?
+    if fireButton.isDown
+      fireBullet()
+    if game.time.now > firingTimer
+      enemyFires()
+    #  Run collision
+    game.physics.arcade.overlap bullets, aliens, collisionHandler, null, this
+    game.physics.arcade.overlap enemyBullets, player, enemyHitsPlayer, null, this
   return
 
 render = ->
   {debug} = game
-  game.debug.renderGraph game.world, debug.bounds.left, debug.bounds.top, "16px monospace", 25
-  game.sceneGraphPlugin.renderColors debug.bounds.left, 550, "16px monospace", 25
+  x = debug.bounds.left
+  y = debug.bounds.top
+  lineHeight = 25
+  debug.text 'game.debug.renderGraph()', x, y += lineHeight, 'white', debug.font
+  debug.text '------------------------', x, y += lineHeight, 'white', debug.font
+  debug.renderGraph game.world,          x, y += lineHeight, debug.font, 25
+  y = 375
+  game.sceneGraphPlugin.renderColors     x, y              , debug.font, 25
   return
 
-EnemyTank = (index, game, player, bullets) ->
-  x = game.world.randomX
-  y = game.world.randomY
-  @game = game
-  @health = 3
-  @player = player
-  @bullets = bullets
-  @fireRate = 1000
-  @nextFire = 0
-  @alive = true
-  @name = "enemyTank#{index}"
-  @shadow = game.add.sprite(x, y, 'enemy', 'shadow')
-  @tank = game.add.sprite(x, y, 'enemy', 'tank1')
-  @turret = game.add.sprite(x, y, 'enemy', 'turret')
-  @shadow.anchor.set 0.5
-  @tank.anchor.set 0.5
-  @turret.anchor.set 0.3, 0.5
-  @tank.name = "tank#{index}"
-  @tank._parent = this
-  game.physics.enable @tank, Phaser.Physics.ARCADE
-  @tank.body.immovable = false
-  @tank.body.collideWorldBounds = true
-  @tank.body.bounce.setTo 1, 1
-  @tank.angle = game.rnd.angle()
-  game.physics.arcade.velocityFromRotation @tank.rotation, 100, @tank.body.velocity
+collisionHandler = (bullet, alien) ->
+  #  When a bullet hits an alien we kill them both
+  bullet.kill()
+  alien.kill()
+  #  Increase the score
+  score += 20
+  scoreText.text = scoreString + score
+  #  And create an explosion :)
+  explosion = explosions.getFirstExists(false)
+  explosion.reset alien.body.x, alien.body.y
+  explosion.play 'kaboom', 30, false, true
+  if aliens.countLiving() == 0
+    score += 1000
+    scoreText.text = scoreString + score
+    enemyBullets.callAll 'kill', this
+    stateText.text = 'VICTORY\n\n[restart]'
+    stateText.visible = true
+    #the "click to restart" handler
+    game.input.onTap.addOnce restart, this
   return
 
-EnemyTank::damage = ->
-  @health -= 1
-  if @health <= 0
-    @alive = false
-    @shadow.kill()
-    @tank.kill()
-    @turret.kill()
-    return true
-  false
-
-EnemyTank::update = ->
-  @shadow.x = @tank.x
-  @shadow.y = @tank.y
-  @shadow.rotation = @tank.rotation
-  @turret.x = @tank.x
-  @turret.y = @tank.y
-  @turret.rotation = @game.physics.arcade.angleBetween(@tank, @player)
-  if @game.physics.arcade.distanceBetween(@tank, @player) < 300
-    if @game.time.now > @nextFire and @bullets.countDead() > 0
-      @nextFire = @game.time.now + @fireRate
-      bullet = @bullets.getFirstDead()
-      bullet.reset @turret.x, @turret.y
-      bullet.rotation = @game.physics.arcade.moveToObject(bullet, @player, 500)
+enemyHitsPlayer = (player, bullet) ->
+  bullet.kill()
+  live = lives.getFirstAlive()
+  if live
+    live.kill()
+  #  And create an explosion :)
+  explosion = explosions.getFirstExists(false)
+  explosion.reset player.body.x, player.body.y
+  explosion.play 'kaboom', 30, false, true
+  # When the player dies
+  if lives.countLiving() < 1
+    player.kill()
+    enemyBullets.callAll 'kill'
+    stateText.text = 'GAME OVER\n\n[restart]'
+    stateText.visible = true
+    #the "click to restart" handler
+    game.input.onTap.addOnce restart, this
   return
 
-@game = game = new (Phaser.Game)(1200, 800, Phaser.CANVAS, 'phaser-example',
-  init:    init
+enemyFires = ->
+  #  Grab the first bullet we can from the pool
+  enemyBullet = enemyBullets.getFirstExists(false)
+  livingEnemies.length = 0
+  aliens.forEachAlive (alien) ->
+    # put every living enemy in an array
+    livingEnemies.push alien
+    return
+  if enemyBullet and livingEnemies.length > 0
+    random = game.rnd.integerInRange(0, livingEnemies.length - 1)
+    # randomly select one of them
+    shooter = livingEnemies[random]
+    # And fire the bullet from this enemy
+    enemyBullet.reset shooter.body.x, shooter.body.y
+    game.physics.arcade.moveToObject enemyBullet, player, 120
+    firingTimer = game.time.now + 2000
+  return
+
+fireBullet = ->
+  #  To avoid them being allowed to fire too fast we set a time limit
+  if game.time.now > bulletTime
+    #  Grab the first bullet we can from the pool
+    bullet = bullets.getFirstExists(false)
+    if bullet
+      #  And fire it
+      bullet.reset player.x, player.y + 8
+      bullet.body.velocity.y = -400
+      bulletTime = game.time.now + 200
+  return
+
+resetBullet = (bullet) ->
+  #  Called if the bullet goes out of the screen
+  bullet.kill()
+  return
+
+restart = ->
+  # A new level starts
+  # resets the life count
+  lives.callAll 'revive'
+  # and brings the aliens back from the dead :)
+  aliens.removeAll()
+  createAliens()
+  # revives the player
+  player.revive()
+  # hides the text
+  stateText.visible = false
+  return
+
+game = new (Phaser.Game)(1200, 600, Phaser.CANVAS, 'phaser-example',
+  init: init
   preload: preload
   create: create
   update: update
