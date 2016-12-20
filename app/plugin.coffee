@@ -43,7 +43,6 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
       someExist:     "#fda331"
       noneExist:     "#fc6d24"
       nonrenderable: "#505050"
-      nondrawable:   "#be643c"
       dead:          "#fb0120"
 
     css: freeze
@@ -90,7 +89,6 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
       when total              is 0      then colors.noneExist
       when hasTotal                     then colors.someExist
       when obj.renderable     is no     then colors.nonrenderable
-      when obj.renderOrderID  <  0      then colors.nondrawable
       when obj.alive          is no     then colors.dead
 
   css: (obj) ->
