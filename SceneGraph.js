@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin 0.7.0 (1) for Phaser
+  Scene Graph plugin 0.7.0 (3) for Phaser
  */
 
 (function() {
@@ -75,7 +75,6 @@
         someExist: "#fda331",
         noneExist: "#fc6d24",
         nonrenderable: "#505050",
-        nondrawable: "#be643c",
         dead: "#fb0120"
       }),
       css: freeze({
@@ -119,7 +118,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.VERSION = "0.7.0 (1)";
+    SceneGraph.VERSION = "0.7.0 (3)";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -162,8 +161,6 @@
           return colors.someExist;
         case obj.renderable !== false:
           return colors.nonrenderable;
-        case !(obj.renderOrderID < 0):
-          return colors.nondrawable;
         case obj.alive !== false:
           return colors.dead;
       }
