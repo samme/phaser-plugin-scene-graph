@@ -10,10 +10,16 @@
 
 {extend} = Phaser.Utils
 
-Phaser.BitmapData   ::toString = -> "[Phaser.BitmapData]"
-Phaser.RenderTexture::toString = -> "[Phaser.RenderTexture]"
-Phaser.Video        ::toString = -> "[Phaser.Video]"
-PIXI.Texture        ::toString = -> "[PIXI.Texture]"
+if Phaser.BitmapData
+  Phaser.BitmapData::toString = -> "[Phaser.BitmapData]"
+
+if Phaser.RenderTexture
+  Phaser.RenderTexture::toString = -> "[Phaser.RenderTexture]"
+
+if Phaser.Video
+  Phaser.Video::toString = -> "[Phaser.Video]"
+
+PIXI.Texture::toString = -> "[PIXI.Texture]"
 
 Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 

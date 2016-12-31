@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin 0.7.0 (3) for Phaser
+  Scene Graph plugin 0.7.1 (1) for Phaser
  */
 
 (function() {
@@ -15,17 +15,23 @@
 
   extend = Phaser.Utils.extend;
 
-  Phaser.BitmapData.prototype.toString = function() {
-    return "[Phaser.BitmapData]";
-  };
+  if (Phaser.BitmapData) {
+    Phaser.BitmapData.prototype.toString = function() {
+      return "[Phaser.BitmapData]";
+    };
+  }
 
-  Phaser.RenderTexture.prototype.toString = function() {
-    return "[Phaser.RenderTexture]";
-  };
+  if (Phaser.RenderTexture) {
+    Phaser.RenderTexture.prototype.toString = function() {
+      return "[Phaser.RenderTexture]";
+    };
+  }
 
-  Phaser.Video.prototype.toString = function() {
-    return "[Phaser.Video]";
-  };
+  if (Phaser.Video) {
+    Phaser.Video.prototype.toString = function() {
+      return "[Phaser.Video]";
+    };
+  }
 
   PIXI.Texture.prototype.toString = function() {
     return "[PIXI.Texture]";
@@ -118,7 +124,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.VERSION = "0.7.0 (3)";
+    SceneGraph.VERSION = "0.7.1 (1)";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
