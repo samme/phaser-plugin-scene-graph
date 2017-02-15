@@ -1,0 +1,7 @@
+*.coffee
+*.html
+*.png
+app/
+bower.json
+dist/invaders
+example.js
