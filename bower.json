@@ -16,6 +16,12 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "*.coffee",
+    "*.html",
+    "*.png",
+    "app/",
+    "dist/invaders",
+    "example.js"
   ]
 }
