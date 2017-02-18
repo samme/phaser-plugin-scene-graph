@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin 0.8.0 (1) for Phaser
+  Scene Graph plugin 0.8.1 (2) for Phaser
  */
 
 (function() {
@@ -126,7 +126,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.VERSION = "0.8.0 (1)";
+    SceneGraph.VERSION = "0.8.1";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);

@@ -61,7 +61,7 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
   @types = types = { 0: "SPRITE", 1: "BUTTON", 2: "IMAGE", 3: "GRAPHICS", 4: "TEXT", 5: "TILESPRITE", 6: "BITMAPTEXT", 7: "GROUP", 8: "RENDERTEXTURE", 9: "TILEMAP", 10: "TILEMAPLAYER", 11: "EMITTER", 12: "POLYGON", 13: "BITMAPDATA", 14: "CANVAS_FILTER", 15: "WEBGL_FILTER", 16: "ELLIPSE", 17: "SPRITEBATCH", 18: "RETROFONT", 19: "POINTER", 20: "ROPE", 21: "CIRCLE", 22: "RECTANGLE", 23: "LINE", 24: "MATRIX", 25: "POINT", 26: "ROUNDEDRECTANGLE", 27: "CREATURE", 28: "VIDEO"}
 
-  @VERSION = "{!major!}.{!minor!}.{!maintenance!} ({!build!})"
+  @VERSION = "{!major!}.{!minor!}.{!maintenance!}"
 
   @addTo = (game) ->
     game.plugins.add this
