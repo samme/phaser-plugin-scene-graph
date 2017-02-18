@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin 0.7.1 (1) for Phaser
+  Scene Graph plugin 0.7.2 (21) for Phaser
  */
 
 (function() {
@@ -61,13 +61,15 @@
     _join = [];
 
     join = function(arr, str) {
-      var i, j, len;
-      _join.length = 0;
-      for (j = 0, len = arr.length; j < len; j++) {
-        i = arr[j];
-        if ((i != null) && i !== '') {
-          _join.push(i);
+      var i, index, item, len;
+      _join.length = index = 0;
+      for (i = 0, len = arr.length; i < len; i++) {
+        item = arr[i];
+        if (!(item || item === 0)) {
+          continue;
         }
+        _join[index] = item;
+        index += 1;
       }
       return _join.join(str);
     };
@@ -124,7 +126,7 @@
       28: "VIDEO"
     };
 
-    SceneGraph.VERSION = "0.7.1 (1)";
+    SceneGraph.VERSION = "0.7.2 (21)";
 
     SceneGraph.addTo = function(game) {
       return game.plugins.add(this);
@@ -145,12 +147,13 @@
       }
       Phaser.Utils.Debug.prototype.graph = this.graph.bind(this);
       Phaser.Utils.Debug.prototype.renderGraph = this.renderGraph.bind(this);
+      Phaser.Utils.Debug.prototype.renderGraphMultiple = this.renderGraphMultiple.bind(this);
     };
 
-    SceneGraph.prototype.color = function(obj) {
-      var colors, hasTotal, length, total;
+    SceneGraph.prototype.color = function(obj, total) {
+      var colors, hasTotal, length;
       colors = this.config.colors;
-      length = obj.length, total = obj.total;
+      length = obj.length;
       hasTotal = total != null;
       switch (false) {
         case obj.exists !== false:
@@ -199,7 +202,7 @@
     };
 
     SceneGraph.prototype.graph = function(obj, options) {
-      var alive, child, children, collapse, description, exists, filter, hasChildren, j, len, map, method, skipDead, skipNonexisting;
+      var alive, child, children, collapse, description, exists, filter, hasChildren, i, len, map, method, skipDead, skipNonexisting;
       if (obj == null) {
         obj = this.game.stage;
       }
@@ -219,11 +222,11 @@
       }
       hasChildren = (children != null ? children.length : void 0) > 0;
       method = hasChildren ? (collapse ? groupCollapsed : group) : log;
-      description = (map ? map : this.map).call(null, obj, options);
+      description = (map ? map : this.map).call(null, obj, obj.total);
       method("%c" + description, this.css(obj));
       if (hasChildren) {
-        for (j = 0, len = children.length; j < len; j++) {
-          child = children[j];
+        for (i = 0, len = children.length; i < len; i++) {
+          child = children[i];
           this.graph(child, options);
         }
       }
@@ -232,25 +235,16 @@
       }
     };
 
-    SceneGraph.prototype.map = function(obj) {
-      var children, constructor, count, hasLength, hasLess, length, longName, total, type;
-      children = obj.children, constructor = obj.constructor, total = obj.total, type = obj.type;
+    SceneGraph.prototype.map = function(obj, total) {
+      var children, constructor, count, hasLength, hasLess, length, longName, type;
+      children = obj.children, constructor = obj.constructor, type = obj.type;
       longName = getName(obj);
       length = (children != null ? children.length : void 0) || 0;
       hasLength = obj.length != null;
       hasLess = (total != null) && total < length;
-      type = types[type] || '?';
-      count = (function() {
-        switch (false) {
-          case !hasLess:
-            return "(" + total + "/" + length + ")";
-          case !hasLength:
-            return "(" + length + ")";
-          default:
-            return "";
-        }
-      })();
-      return ((constructor != null ? constructor.name : void 0) || type) + " " + longName + " " + count;
+      type = types[type];
+      count = hasLess ? "(" + total + "/" + length + ")" : hasLength ? "(" + length + ")" : "";
+      return join([(constructor != null ? constructor.name : void 0) || type, longName, count], " ");
     };
 
     SceneGraph.prototype.printStyles = function() {
@@ -287,7 +281,7 @@
     };
 
     SceneGraph.prototype.renderGraph = function(obj, x, y, font, lineHeight) {
-      var child, debug, j, len, ref1;
+      var debug;
       if (obj == null) {
         obj = this.game.world;
       }
@@ -306,16 +300,35 @@
       debug = this.game.debug;
       this.renderObj(obj, x, y, font);
       x += lineHeight;
-      ref1 = obj.children;
-      for (j = 0, len = ref1.length; j < len; j++) {
-        child = ref1[j];
+      y += lineHeight;
+      this.renderGraphMultiple(obj.children, x, y, font, lineHeight);
+    };
+
+    SceneGraph.prototype.renderGraphMultiple = function(objs, x, y, font, lineHeight) {
+      var i, len, obj;
+      if (x == null) {
+        x = 0;
+      }
+      if (y == null) {
+        y = 0;
+      }
+      if (font == null) {
+        font = this.game.debug.font;
+      }
+      if (lineHeight == null) {
+        lineHeight = this.game.debug.lineHeight;
+      }
+      for (i = 0, len = objs.length; i < len; i++) {
+        obj = objs[i];
+        this.renderObj(obj, x, y, font);
         y += lineHeight;
-        this.renderObj(child, x, y, font);
       }
     };
 
     SceneGraph.prototype.renderObj = function(obj, x, y, font) {
-      this.game.debug.text(this.map(obj), x, y, this.color(obj), font);
+      var total;
+      total = obj.total;
+      this.game.debug.text(this.map(obj, total), x, y, this.color(obj, total), font);
     };
 
     return SceneGraph;

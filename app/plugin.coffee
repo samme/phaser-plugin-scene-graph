@@ -35,9 +35,10 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
   _join = []
 
   join = (arr, str) ->
-    _join.length = 0
-    for i in arr when i? and i isnt ''
-      _join.push i
+    _join.length = index = 0
+    for item in arr when item or item is 0
+      _join[index] = item
+      index += 1
     _join.join str
 
   @config = freeze
@@ -79,13 +80,14 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
       @printStyles()
     Phaser.Utils.Debug::graph = @graph.bind this
     Phaser.Utils.Debug::renderGraph = @renderGraph.bind this
+    Phaser.Utils.Debug::renderGraphMultiple = @renderGraphMultiple.bind this
     return
 
   # Helpers
 
-  color: (obj) ->
+  color: (obj, total) ->
     {colors} = @config
-    {length, total} = obj
+    {length} = obj
     hasTotal = total?
     switch
       when obj.exists         is no     then colors.nonexisting
@@ -134,27 +136,27 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
     hasChildren = children?.length > 0
     method      = if hasChildren then (if collapse then groupCollapsed else group) else log
-    description = (if map then map else @map).call null, obj, options
+    description = (if map then map else @map).call null, obj, obj.total
 
     method "%c#{description}", @css obj
     @graph child, options for child in children if hasChildren
     groupEnd() if hasChildren
     return
 
-  map: (obj) ->
-    {children, constructor, total, type} = obj
+  map: (obj, total) ->
+    {children, constructor, type} = obj
 
     longName    = getName obj
     length      = children?.length or 0 # Button, Group, Sprite, Text …
     hasLength   = obj.length?           # Group, Emitter, Line(!)
     hasLess     = total? and total < length
-    type        = types[type] or '?'
-    count       = switch
-                  when hasLess   then "(#{total}/#{length})"
-                  when hasLength then "(#{length})"
-                  else                ""
+    type        = types[type]
+    count       =
+      if      hasLess   then "(#{total}/#{length})"
+      else if hasLength then "(#{length})"
+      else                   ""
 
-    "#{constructor?.name or type} #{longName} #{count}"
+    join [(constructor?.name or type), longName, count], " "
 
   printStyles: ->
     log "Objects are styled:"
@@ -174,13 +176,19 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
 
     @renderObj obj, x, y, font
     x += lineHeight
+    y += lineHeight
 
-    for child in obj.children
+    @renderGraphMultiple obj.children, x, y, font, lineHeight
+    return
+
+  renderGraphMultiple: (objs, x = 0, y = 0, font = @game.debug.font, lineHeight = @game.debug.lineHeight) ->
+    for obj in objs
+      @renderObj obj, x, y, font
       y += lineHeight
-      @renderObj child, x, y, font
     return
 
   renderObj: (obj, x, y, font) ->
-    @game.debug.text @map(obj), x, y, @color(obj), font
+    {total} = obj
+    @game.debug.text @map(obj, total), x, y, @color(obj, total), font
     return
 
