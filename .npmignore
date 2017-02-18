@@ -3,5 +3,7 @@
 *.png
 app/
 bower.json
+bower_components/
 dist/invaders
 example.js
+version.json
