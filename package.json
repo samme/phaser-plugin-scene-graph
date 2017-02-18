@@ -13,7 +13,7 @@
   "scripts": {
     "start": "brunch watch --server",
     "build": "brunch build --production",
-    "preversion": "echo 'TODO eslint'",
+    "preversion": "eslint dist",
     "version": "npm run build && git add app dist --all",
     "deploy": "git push origin master && git subtree push --prefix dist origin gh-pages"
   },

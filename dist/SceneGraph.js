@@ -281,7 +281,6 @@
     };
 
     SceneGraph.prototype.renderGraph = function(obj, x, y, font, lineHeight) {
-      var debug;
       if (obj == null) {
         obj = this.game.world;
       }
@@ -297,7 +296,6 @@
       if (lineHeight == null) {
         lineHeight = this.game.debug.lineHeight;
       }
-      debug = this.game.debug;
       this.renderObj(obj, x, y, font);
       x += lineHeight;
       y += lineHeight;

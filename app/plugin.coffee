@@ -172,8 +172,6 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     return
 
   renderGraph: (obj = @game.world, x = 0, y = 0, font = @game.debug.font, lineHeight = @game.debug.lineHeight) ->
-    {debug} = @game
-
     @renderObj obj, x, y, font
     x += lineHeight
     y += lineHeight
