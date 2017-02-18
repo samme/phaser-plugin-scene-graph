@@ -1,5 +1,5 @@
 ###
-  Scene Graph plugin {!major!}.{!minor!}.{!maintenance!} ({!build!}) for Phaser
+  Scene Graph plugin {!major!}.{!minor!}.{!maintenance!} for Phaser
 ###
 
 "use strict"

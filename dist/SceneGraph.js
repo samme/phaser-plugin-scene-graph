@@ -1,6 +1,6 @@
 
 /*
-  Scene Graph plugin 0.8.2 (1) for Phaser
+  Scene Graph plugin 0.8.2 for Phaser
  */
 
 (function() {
