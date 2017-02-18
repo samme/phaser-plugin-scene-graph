@@ -13,6 +13,7 @@
   "scripts": {
     "start": "brunch watch --server",
     "build": "brunch build --production",
+    "version": "npm run build",
     "deploy": "git push origin master && git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {
