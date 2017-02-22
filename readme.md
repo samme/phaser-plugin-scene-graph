@@ -1,7 +1,12 @@
-Phaser Scene Graph Plugin 👾
-=========================
+[Demo](https://samme.github.io/phaser-plugin-scene-graph/).
 
-Prints Phaser’s display tree. [Demo](https://samme.github.io/phaser-plugin-scene-graph/).
+Install
+-------
+
+If not using `npm` or `bower`, add [SceneGraph.js](dist/SceneGraph.js) after `phaser.js`.
+
+Use 👾
+---
 
 ```javascript
 game.plugins.add(Phaser.Plugin.SceneGraph);
@@ -53,9 +58,9 @@ game.plugins.add(Phaser.Plugin.SceneGraph, {
 Tips
 ----
 
-```javascript
-// Name your groups and emitters:
+Name your groups and emitters:
 
+```javascript
 group.name = "invaders"
 
 emitter.name = "stars"
@@ -64,9 +69,8 @@ emitter.name = "stars"
 For a quick look at a game in progress, run in the console:
 
 ```javascript
-(this.game || Phaser.GAMES[0]).load.script("SceneGraph",
-    "https://samme.github.io/phaser-plugin-scene-graph/SceneGraph.js",
-    function (){
-        this.game.plugins.add(Phaser.Plugin.SceneGraph).graph();
-    }).start();
+(this.game || Phaser.GAMES[0]).load.script("SceneGraph", "https://samme.github.io/phaser-plugin-scene-graph/SceneGraph.js",
+  function (){
+    this.game.plugins.add(Phaser.Plugin.SceneGraph).graph();
+  }).start();
 ```
