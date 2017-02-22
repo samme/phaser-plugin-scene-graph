@@ -22,6 +22,8 @@
     "*.png",
     "app/",
     "dist/invaders",
-    "example.js"
+    "dist/example.js",
+    "package.json",
+    "version.json"
   ]
 }
