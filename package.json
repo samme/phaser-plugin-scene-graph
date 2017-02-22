@@ -2,20 +2,23 @@
   "name": "phaser-plugin-scene-graph",
   "description": "Prints the display tree",
   "homepage": "https://samme.github.io/phaser-plugin-scene-graph/",
-  "bugs": "https://github.com/samme/phaser-plugin-scene-graph/issues",
+  "bugs": {
+    "url": "https://github.com/samme/phaser-plugin-scene-graph/issues"
+  },
   "author": "samme",
   "version": "0.9.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/samme/phaser-plugin-scene-graph.git"
+    "url": "git+https://github.com/samme/phaser-plugin-scene-graph.git"
   },
   "scripts": {
     "start": "brunch watch --server",
     "build": "brunch build --production",
     "preversion": "eslint dist",
     "version": "npm run build && git add app dist --all",
-    "deploy": "git push origin master && git subtree push --prefix dist origin gh-pages"
+    "pub": "np",
+    "postpublish": "git subtree push --prefix dist origin gh-pages"
   },
   "dependencies": {
     "phaser": "^2.6.2"
@@ -31,5 +34,10 @@
     "jstransformer-verbatim": "^1.0.0",
     "uglify-js-brunch": "^2.0.0",
     "version-brunch": "^1.0.1"
-  }
+  },
+  "main": "dist/SceneGraph.js",
+  "keywords": [
+    "phaser",
+    "phaser-plugin"
+  ]
 }
