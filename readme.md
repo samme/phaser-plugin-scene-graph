@@ -13,7 +13,9 @@ game.plugins.add(Phaser.Plugin.SceneGraph);
 Debug Canvas
 ------------
 
-[![Print on the debug canvas](https://samme.github.io/phaser-plugin-scene-graph/screenshot1.png)](https://samme.github.io/phaser-plugin-scene-graph/ Demo)
+![Print on the debug canvas](https://samme.github.io/phaser-plugin-scene-graph/screenshot1.png)
+
+[Demo](https://samme.github.io/phaser-plugin-scene-graph/)
 
 ```javascript
 game.debug.renderGraph(obj, x, y, font, lineHeight);
@@ -22,7 +24,9 @@ game.debug.renderGraph(obj, x, y, font, lineHeight);
 Console
 -------
 
-[![Print to the browser console](https://samme.github.io/phaser-plugin-scene-graph/screenshot2.png)](https://samme.github.io/phaser-plugin-scene-graph/ Demo)
+![Print to the browser console](https://samme.github.io/phaser-plugin-scene-graph/screenshot2.png)
+
+[Demo](https://samme.github.io/phaser-plugin-scene-graph/)
 
 ```javascript
 game.debug.graph() // everything; or
