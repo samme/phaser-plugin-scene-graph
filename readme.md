@@ -1,7 +1,9 @@
+[Demo](https://samme.github.io/phaser-plugin-scene-graph/)
+
 Install
 -------
 
-If not using `npm` or `bower`, add [SceneGraph.js](dist/SceneGraph.js) after `phaser.js`.
+If not using `npm` or `bower`, add [SceneGraph.js](dist/SceneGraph.js) after phaser.js.
 
 Use 👾
 ---
