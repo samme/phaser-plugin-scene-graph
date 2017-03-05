@@ -21,7 +21,7 @@ if Phaser.Video
 
 PIXI.Texture::toString = -> "[PIXI.Texture]"
 
-Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
+freeze class Phaser.Plugin.SceneGraph extends Phaser.Plugin
 
   {group, groupCollapsed, groupEnd, log} = console
 
@@ -189,4 +189,3 @@ Phaser.Plugin.SceneGraph = freeze class SceneGraph extends Phaser.Plugin
     {total} = obj
     @game.debug.text @map(obj, total), x, y, @color(obj, total), font
     return
-
