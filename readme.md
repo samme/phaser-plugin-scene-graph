@@ -1,4 +1,4 @@
-[Demo](https://samme.github.io/phaser-plugin-scene-graph/)
+Prints the display tree. [Demo](https://samme.github.io/phaser-plugin-scene-graph/)
 
 Install
 -------
@@ -17,8 +17,6 @@ Debug Canvas
 
 ![Print on the debug canvas](https://samme.github.io/phaser-plugin-scene-graph/screenshot1.png)
 
-[Demo](https://samme.github.io/phaser-plugin-scene-graph/)
-
 ```javascript
 game.debug.renderGraph(obj, x, y, font, lineHeight);
 ```
@@ -27,8 +25,6 @@ Console
 -------
 
 ![Print to the browser console](https://samme.github.io/phaser-plugin-scene-graph/screenshot2.png)
-
-[Demo](https://samme.github.io/phaser-plugin-scene-graph/)
 
 ```javascript
 game.debug.graph() // everything; or
