@@ -26,7 +26,6 @@
   "devDependencies": {
     "auto-reload-brunch": "^2.0.0",
     "coffee-script-brunch": "^2.0.0",
-    "coffeelint-brunch": "^2.0.0",
     "javascript-brunch": "^2.0.0",
     "jstransformer-coffee-script": "^1.0.0",
     "jstransformer-markdown": "^1.1.0",
