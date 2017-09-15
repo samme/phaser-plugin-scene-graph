@@ -3,7 +3,8 @@ module.exports =
     javascripts:
       joinTo:
         'SceneGraph.js': 'app/plugin.coffee',
-        'example.js':    'app/example.coffee'
+        'example.js': 'app/example.coffee',
+        'example/vendor.js': 'bower_components/phaser/build/phaser.js'
   modules:
     definition: no
     wrapper: no

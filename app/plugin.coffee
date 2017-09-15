@@ -6,9 +6,13 @@
 
 {freeze, seal} = Object
 
-{Phaser, PIXI} = this
+Phaser = Phaser or @Phaser or window.Phaser or require? 'phaser'
 
-{extend} = Phaser.Utils
+throw new Error "Couldn't find `Phaser` or require 'phaser'" unless Phaser
+
+PIXI = PIXI or @PIXI or window.PIXI or require? 'pixi'
+
+throw new Error "Couldn't find `PIXI` or require 'pixi'" unless PIXI
 
 if Phaser.BitmapData
   Phaser.BitmapData::toString = -> "[Phaser.BitmapData]"
@@ -71,6 +75,7 @@ freeze class Phaser.Plugin.SceneGraph extends Phaser.Plugin
   # Hooks
 
   init: (settings) ->
+    {extend} = Phaser.Utils
     @config = extend yes, {}, @constructor.config
     seal @config
     extend yes, @config, settings if settings
@@ -189,3 +194,5 @@ freeze class Phaser.Plugin.SceneGraph extends Phaser.Plugin
     {total} = obj
     @game.debug.text @map(obj, total), x, y, @color(obj, total), font
     return
+
+module?.exports = Phaser.Plugin.SceneGraph
