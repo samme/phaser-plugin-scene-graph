@@ -11,13 +11,13 @@
 
   freeze = Object.freeze, seal = Object.seal;
 
-  Phaser = Phaser || this.Phaser || window.Phaser || (typeof require === "function" ? require('phaser') : void 0);
+  Phaser = Phaser || this.Phaser || window.Phaser || (typeof require === "function" ? require("phaser") : void 0);
 
   if (!Phaser) {
     throw new Error("Couldn't find `Phaser` or require 'phaser'");
   }
 
-  PIXI = PIXI || this.PIXI || window.PIXI || (typeof require === "function" ? require('pixi') : void 0);
+  PIXI = PIXI || this.PIXI || window.PIXI || (typeof require === "function" ? require("pixi") : void 0);
 
   if (!PIXI) {
     throw new Error("Couldn't find `PIXI` or require 'pixi'");

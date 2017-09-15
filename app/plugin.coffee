@@ -6,11 +6,11 @@
 
 {freeze, seal} = Object
 
-Phaser = Phaser or @Phaser or window.Phaser or require? 'phaser'
+Phaser = Phaser or @Phaser or window.Phaser or require? "phaser"
 
 throw new Error "Couldn't find `Phaser` or require 'phaser'" unless Phaser
 
-PIXI = PIXI or @PIXI or window.PIXI or require? 'pixi'
+PIXI = PIXI or @PIXI or window.PIXI or require? "pixi"
 
 throw new Error "Couldn't find `PIXI` or require 'pixi'" unless PIXI
 
