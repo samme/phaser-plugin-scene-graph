@@ -5,15 +5,23 @@
 
 (function() {
   "use strict";
-  var PIXI, Phaser, extend, freeze, ref, seal,
+  var PIXI, Phaser, freeze, seal,
     extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   freeze = Object.freeze, seal = Object.seal;
 
-  ref = this, Phaser = ref.Phaser, PIXI = ref.PIXI;
+  Phaser = Phaser || this.Phaser || window.Phaser || (typeof require === "function" ? require('phaser') : void 0);
 
-  extend = Phaser.Utils.extend;
+  if (!Phaser) {
+    throw new Error("Couldn't find `Phaser` or require 'phaser'");
+  }
+
+  PIXI = PIXI || this.PIXI || window.PIXI || (typeof require === "function" ? require('pixi') : void 0);
+
+  if (!PIXI) {
+    throw new Error("Couldn't find `PIXI` or require 'pixi'");
+  }
 
   if (Phaser.BitmapData) {
     Phaser.BitmapData.prototype.toString = function() {
@@ -135,6 +143,8 @@
     SceneGraph.prototype.name = "Scene Graph Plugin";
 
     SceneGraph.prototype.init = function(settings) {
+      var extend;
+      extend = Phaser.Utils.extend;
       this.config = extend(true, {}, this.constructor.config);
       seal(this.config);
       if (settings) {
@@ -248,17 +258,17 @@
     };
 
     SceneGraph.prototype.printStyles = function() {
-      var name, ref1, style;
+      var name, ref, style;
       log("Objects are styled:");
-      ref1 = this.config.css;
-      for (name in ref1) {
-        style = ref1[name];
+      ref = this.config.css;
+      for (name in ref) {
+        style = ref[name];
         log("%c" + name, style);
       }
     };
 
     SceneGraph.prototype.renderColors = function(x, y, font, lineHeight) {
-      var color, debug, name, ref1;
+      var color, debug, name, ref;
       if (x == null) {
         x = 0;
       }
@@ -272,9 +282,9 @@
         lineHeight = this.game.debug.lineHeight;
       }
       debug = this.game.debug;
-      ref1 = this.config.colors;
-      for (name in ref1) {
-        color = ref1[name];
+      ref = this.config.colors;
+      for (name in ref) {
+        color = ref[name];
         debug.text(name, x, y, color, font);
         y += lineHeight;
       }
@@ -332,6 +342,10 @@
     return SceneGraph;
 
   })(Phaser.Plugin));
+
+  if (typeof module !== "undefined" && module !== null) {
+    module.exports = Phaser.Plugin.SceneGraph;
+  }
 
 }).call(this);
 

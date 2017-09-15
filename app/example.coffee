@@ -100,14 +100,6 @@ create = ->
   explosions.createMultiple 10, "kaboom"
   explosions.setAll "blendMode", ADD
   explosions.forEach setupInvader, this
-  #  Caption
-  caption = game.stage.addChild game.make.text 0, 0,
-    "Phaser v#{Phaser.VERSION}
-    Plugin v#{Phaser.Plugin.SceneGraph.VERSION}", {
-      fill: "white"
-      font: "12px monospace"
-    }
-  caption.alignIn game.camera.view, Phaser.BOTTOM_LEFT, -5, -5
   #  And some controls to play the game with
   cursors = game.input.keyboard.createCursorKeys()
   fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
@@ -171,8 +163,13 @@ render = ->
   debug.text "game.debug.renderGraph()", x, y += lineHeight, "white", debug.font
   debug.text "------------------------", x, y += lineHeight, "white", debug.font
   debug.renderGraph game.world,          x, y += lineHeight, debug.font, 25
-  y = 375
-  game.sceneGraphPlugin.renderColors     x, y              , debug.font, 25
+  y = 350
+  debug.text "colors:",                  x, y += lineHeight, "white", debug.font
+  game.sceneGraphPlugin.renderColors     x + 80, y, debug.font, 25
+  debug.text "
+    Phaser v#{Phaser.VERSION}
+    Plugin v#{Phaser.Plugin.SceneGraph.VERSION}
+    ", 20, 580, "#808080"
   return
 
 collisionHandler = (bullet, alien) ->
