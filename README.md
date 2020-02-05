@@ -69,8 +69,15 @@ emitter.name = "stars"
 For a quick look at a game in progress, run in the console:
 
 ```javascript
-(this.game || Phaser.GAMES[0]).load.script("SceneGraph", "https://samme.github.io/phaser-plugin-scene-graph/SceneGraph.js",
-  function (){
-    this.game.plugins.add(Phaser.Plugin.SceneGraph).graph();
-  }).start();
+(function(game) {
+  game.load
+    .script(
+      "SceneGraph",
+      "https://cdn.jsdelivr.net/npm/phaser-plugin-scene-graph@1.1.0/dist/SceneGraph.js",
+      function() {
+        game.plugins.add(Phaser.Plugin.SceneGraph).graph();
+      }
+    )
+    .start();
+})(window.game || Phaser.GAMES[0]);
 ```
